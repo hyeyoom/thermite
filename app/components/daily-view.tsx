@@ -14,6 +14,8 @@ const DailyView = () => {
       id: '1',
       number: 1,
       title: '',
+      startTime: '',
+      endTime: '',
       todos: [],
       reflection: ''
     }
@@ -64,6 +66,14 @@ const DailyView = () => {
     ))
   }
 
+  const handleTimeChange = (blockId: string, start: string, end: string) => {
+    setBlocks(blocks.map(block => 
+      block.id === blockId 
+        ? { ...block, startTime: start, endTime: end }
+        : block
+    ))
+  }
+
   return (
     <div className="max-w-6xl mx-auto">
       <div className="flex justify-between items-center mb-6">
@@ -77,15 +87,18 @@ const DailyView = () => {
         </div>
       </div>
 
-      <div className="space-y-4">
+      <div className="space-y-0">
         {blocks.map(block => (
           <Block
             key={block.id}
             number={block.number}
             title={block.title}
+            startTime={block.startTime}
+            endTime={block.endTime}
             todos={block.todos}
             reflection={block.reflection}
             onTitleChange={(title) => handleTitleChange(block.id, title)}
+            onTimeChange={(start, end) => handleTimeChange(block.id, start, end)}
             onAddTodo={(content) => handleAddTodo(block.id, content)}
             onToggleTodo={(todoId) => handleToggleTodo(block.id, todoId)}
             onReflectionChange={(reflection) => handleReflectionChange(block.id, reflection)}
