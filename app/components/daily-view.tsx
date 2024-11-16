@@ -1,13 +1,13 @@
 'use client'
 
 import React from 'react'
-import { format } from "date-fns"
-import { ko } from "date-fns/locale"
-import { Button } from "@/components/ui/button"
-import { PlusCircle, Trash2 } from "lucide-react"
+import {format} from "date-fns"
+import {ko} from "date-fns/locale"
+import {Button} from "@/components/ui/button"
+import {PlusCircle} from "lucide-react"
 import Block from './block'
 import MemoSection from './memo-section'
-import { ThemeToggle } from "../../components/theme-toggle"
+import {ThemeToggle} from "../../components/theme-toggle"
 
 interface Todo {
   id: string
@@ -46,7 +46,7 @@ const DailyView = () => {
   const [memos, setMemos] = React.useState<Memo[]>([])
 
   const handleTitleChange = (blockId: string, title: string) => {
-    setBlocks(blocks.map(block => 
+    setBlocks(blocks.map(block =>
       block.id === blockId ? { ...block, title } : block
     ))
   }
@@ -71,7 +71,7 @@ const DailyView = () => {
       if (block.id === blockId) {
         return {
           ...block,
-          todos: block.todos.map(todo => 
+          todos: block.todos.map(todo =>
             todo.id === todoId ? { ...todo, isCompleted: !todo.isCompleted } : todo
           )
         }
@@ -85,7 +85,7 @@ const DailyView = () => {
   }
 
   const handleUpdateMemo = (id: string, content: string) => {
-    setMemos(memos.map(memo => 
+    setMemos(memos.map(memo =>
       memo.id === id ? { ...memo, content } : memo
     ))
   }
@@ -95,14 +95,14 @@ const DailyView = () => {
   }
 
   const handleReflectionChange = (blockId: string, reflection: string) => {
-    setBlocks(blocks.map(block => 
+    setBlocks(blocks.map(block =>
       block.id === blockId ? { ...block, reflection } : block
     ))
   }
 
   const handleTimeChange = (blockId: string, start: string, end: string) => {
-    setBlocks(blocks.map(block => 
-      block.id === blockId 
+    setBlocks(blocks.map(block =>
+      block.id === blockId
         ? { ...block, startTime: start, endTime: end }
         : block
     ))
@@ -126,7 +126,7 @@ const DailyView = () => {
   const handleDeleteBlock = (blockId: string) => {
     setBlocks(blocks.filter(block => block.id !== blockId))
     // 블록 번호 재정렬
-    setBlocks(prevBlocks => 
+    setBlocks(prevBlocks =>
       prevBlocks.map((block, index) => ({
         ...block,
         number: index + 1
@@ -175,33 +175,22 @@ const DailyView = () => {
                 </div>
               </div>
             )}
-            
-            <div className="group relative">
-              <Block
-                number={block.number}
-                title={block.title}
-                startTime={block.startTime}
-                endTime={block.endTime}
-                todos={block.todos}
-                reflection={block.reflection}
-                onTitleChange={(title) => handleTitleChange(block.id, title)}
-                onTimeChange={(start, end) => handleTimeChange(block.id, start, end)}
-                onAddTodo={(content) => handleAddTodo(block.id, content)}
-                onToggleTodo={(todoId) => handleToggleTodo(block.id, todoId)}
-                onDeleteTodo={(todoId) => handleDeleteTodo(block.id, todoId)}
-                onReflectionChange={(reflection) => handleReflectionChange(block.id, reflection)}
-              />
-              {blocks.length > 1 && (
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="absolute -right-12 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity"
-                  onClick={() => handleDeleteBlock(block.id)}
-                >
-                  <Trash2 className="h-4 w-4 text-destructive" />
-                </Button>
-              )}
-            </div>
+            <Block
+              number={block.number}
+              title={block.title}
+              startTime={block.startTime}
+              endTime={block.endTime}
+              todos={block.todos}
+              reflection={block.reflection}
+              isLastBlock={blocks.length === 1}
+              onTitleChange={(value) => handleTitleChange(block.id, value)}
+              onTimeChange={(start, end) => handleTimeChange(block.id, start, end)}
+              onAddTodo={(content) => handleAddTodo(block.id, content)}
+              onToggleTodo={(todoId) => handleToggleTodo(block.id, todoId)}
+              onReflectionChange={(value) => handleReflectionChange(block.id, value)}
+              onDeleteTodo={(todoId) => handleDeleteTodo(block.id, todoId)}
+              onDeleteBlock={() => handleDeleteBlock(block.id)}
+            />
           </React.Fragment>
         ))}
 
@@ -218,8 +207,8 @@ const DailyView = () => {
       </div>
 
       <div className="mt-8">
-        <MemoSection 
-          memos={memos} 
+        <MemoSection
+          memos={memos}
           onAddMemo={handleAddMemo}
           onUpdateMemo={handleUpdateMemo}
           onDeleteMemo={handleDeleteMemo}
@@ -229,4 +218,4 @@ const DailyView = () => {
   )
 }
 
-export default DailyView 
+export default DailyView

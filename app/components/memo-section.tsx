@@ -61,9 +61,9 @@ const MemoSection = ({
   }
 
   return (
-    <Card className="p-4 grid grid-cols-1 lg:grid-cols-[2fr,1fr] gap-4 border-2">
+    <Card className="p-4 grid grid-cols-1 lg:grid-cols-[2fr,1fr] gap-6 border-2">
       {/* 메모 리스트 영역 */}
-      <div className="space-y-2">
+      <div className="space-y-4">
         <div className="flex items-center justify-between">
           <h3 className="font-bold">메모</h3>
           <Button
@@ -113,48 +113,50 @@ const MemoSection = ({
         </ul>
       </div>
 
-      {/* 평가 블록 */}
-      <div className="space-y-4">
+      {/* 평가 블록 - 모바일에서는 가로 스크롤 */}
+      <div className="flex lg:block gap-4 overflow-x-auto pb-2 lg:pb-0">
         {['good', 'bad', 'next'].map((type) => (
-          <div key={type} className="space-y-2">
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-bold uppercase">{type}</span>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setIsAddingEvaluation(type as 'good' | 'bad' | 'next')}
-              >
-                <PlusCircle className="h-4 w-4" />
-              </Button>
-            </div>
-            
-            <ul className="space-y-1">
-              {evaluations
-                .filter(item => item.type === type)
-                .map(item => (
-                  <li key={item.id} className="text-sm border-b-2 border-muted py-1">
-                    {item.content}
-                  </li>
-                ))}
-            </ul>
-
-            {isAddingEvaluation === type && (
-              <div className="flex items-center gap-2">
-                <input
-                  type="text"
-                  value={newEvaluation}
-                  onChange={(e) => setNewEvaluation(e.target.value)}
-                  className="flex-1 text-sm px-2 py-1 border-b-2 border-input focus:outline-none focus:border-foreground transition-colors"
-                  placeholder={`${type} 입력...`}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      handleAddEvaluation(type as 'good' | 'bad' | 'next')
-                    }
-                  }}
-                  autoFocus
-                />
+          <div key={type} className="min-w-[200px] lg:min-w-0 lg:mb-4">
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-bold uppercase">{type}</span>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setIsAddingEvaluation(type as 'good' | 'bad' | 'next')}
+                >
+                  <PlusCircle className="h-4 w-4" />
+                </Button>
               </div>
-            )}
+              
+              <ul className="space-y-1">
+                {evaluations
+                  .filter(item => item.type === type)
+                  .map(item => (
+                    <li key={item.id} className="text-sm border-b-2 border-muted py-1">
+                      {item.content}
+                    </li>
+                  ))}
+              </ul>
+
+              {isAddingEvaluation === type && (
+                <div className="flex items-center gap-2">
+                  <input
+                    type="text"
+                    value={newEvaluation}
+                    onChange={(e) => setNewEvaluation(e.target.value)}
+                    className="flex-1 text-sm px-2 py-1 border-b-2 border-input focus:outline-none focus:border-foreground transition-colors"
+                    placeholder={`${type} 입력...`}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        handleAddEvaluation(type as 'good' | 'bad' | 'next')
+                      }
+                    }}
+                    autoFocus
+                  />
+                </div>
+              )}
+            </div>
           </div>
         ))}
       </div>
