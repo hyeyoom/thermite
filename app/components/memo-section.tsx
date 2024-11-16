@@ -60,6 +60,16 @@ const MemoSection = ({
     }
   }
 
+  const handleEvaluationEdit = (id: string, content: string) => {
+    setEvaluations(evaluations.map(evaluation => 
+      evaluation.id === id ? { ...evaluation, content } : evaluation
+    ))
+  }
+
+  const handleDeleteEvaluation = (id: string) => {
+    setEvaluations(evaluations.filter(evaluation => evaluation.id !== id))
+  }
+
   return (
     <Card className="p-4 grid grid-cols-1 lg:grid-cols-[2fr,1fr] gap-6 border-2">
       {/* 메모 리스트 영역 */}
@@ -113,13 +123,14 @@ const MemoSection = ({
         </ul>
       </div>
 
-      {/* 평가 블록 - 모바일에서는 가로 스크롤 */}
-      <div className="flex lg:block gap-4 overflow-x-auto pb-2 lg:pb-0">
-        {['good', 'bad', 'next'].map((type) => (
-          <div key={type} className="min-w-[200px] lg:min-w-0 lg:mb-4">
-            <div className="space-y-2">
+      {/* 평가 블록 */}
+      <div className="space-y-4">
+        <h3 className="font-bold">평가</h3>
+        <div className="space-y-6">
+          {['good', 'bad', 'next'].map((type) => (
+            <div key={type} className="space-y-2">
               <div className="flex items-center justify-between">
-                <span className="text-sm font-bold uppercase">{type}</span>
+                <span className="text-sm font-medium capitalize">{type}</span>
                 <Button
                   variant="ghost"
                   size="sm"
@@ -133,8 +144,21 @@ const MemoSection = ({
                 {evaluations
                   .filter(item => item.type === type)
                   .map(item => (
-                    <li key={item.id} className="text-sm border-b-2 border-muted py-1">
-                      {item.content}
+                    <li key={item.id} className="group flex items-center gap-2 text-sm border-b-2 border-muted py-1">
+                      <input
+                        type="text"
+                        value={item.content}
+                        onChange={(e) => handleEvaluationEdit(item.id, e.target.value)}
+                        className="flex-1 bg-transparent border-none focus:outline-none focus:ring-0 px-0"
+                      />
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                        onClick={() => handleDeleteEvaluation(item.id)}
+                      >
+                        <X className="h-4 w-4 text-muted-foreground hover:text-destructive" />
+                      </Button>
                     </li>
                   ))}
               </ul>
@@ -157,8 +181,8 @@ const MemoSection = ({
                 </div>
               )}
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
     </Card>
   )
