@@ -1,11 +1,12 @@
 'use client'
 
 import React from 'react'
-import { Card } from "@/components/ui/card"
 import { format } from "date-fns"
 import { ko } from "date-fns/locale"
-import MemoSection from './memo-section'
+import { Button } from "@/components/ui/button"
+import { PlusCircle, Trash2 } from "lucide-react"
 import Block from './block'
+import MemoSection from './memo-section'
 
 const DailyView = () => {
   const today = new Date()
@@ -74,6 +75,32 @@ const DailyView = () => {
     ))
   }
 
+  const handleAddBlock = () => {
+    if (blocks.length >= 6) return
+
+    const newBlock = {
+      id: Date.now().toString(),
+      number: blocks.length + 1,
+      title: '',
+      startTime: '',
+      endTime: '',
+      todos: [],
+      reflection: ''
+    }
+    setBlocks([...blocks, newBlock])
+  }
+
+  const handleDeleteBlock = (blockId: string) => {
+    setBlocks(blocks.filter(block => block.id !== blockId))
+    // 블록 번호 재정렬
+    setBlocks(prevBlocks => 
+      prevBlocks.map((block, index) => ({
+        ...block,
+        number: index + 1
+      }))
+    )
+  }
+
   return (
     <div className="max-w-6xl mx-auto">
       <div className="flex justify-between items-center mb-6">
@@ -87,29 +114,65 @@ const DailyView = () => {
         </div>
       </div>
 
-      <div className="space-y-0">
-        {blocks.map(block => (
-          <Block
-            key={block.id}
-            number={block.number}
-            title={block.title}
-            startTime={block.startTime}
-            endTime={block.endTime}
-            todos={block.todos}
-            reflection={block.reflection}
-            onTitleChange={(title) => handleTitleChange(block.id, title)}
-            onTimeChange={(start, end) => handleTimeChange(block.id, start, end)}
-            onAddTodo={(content) => handleAddTodo(block.id, content)}
-            onToggleTodo={(todoId) => handleToggleTodo(block.id, todoId)}
-            onReflectionChange={(reflection) => handleReflectionChange(block.id, reflection)}
-          />
+      <div className="space-y-4">
+        {blocks.map((block, index) => (
+          <React.Fragment key={block.id}>
+            {(index === 2 || index === 4) && (
+              <div className="relative py-2">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-dashed border-gray-300" />
+                </div>
+                <div className="relative flex justify-center">
+                  <span className="bg-background px-2 text-sm text-muted-foreground">
+                    {index === 2 ? '점심 시간' : '저녁 시간'}
+                  </span>
+                </div>
+              </div>
+            )}
+            
+            <div className="group relative">
+              <Block
+                number={block.number}
+                title={block.title}
+                startTime={block.startTime}
+                endTime={block.endTime}
+                todos={block.todos}
+                reflection={block.reflection}
+                onTitleChange={(title) => handleTitleChange(block.id, title)}
+                onTimeChange={(start, end) => handleTimeChange(block.id, start, end)}
+                onAddTodo={(content) => handleAddTodo(block.id, content)}
+                onToggleTodo={(todoId) => handleToggleTodo(block.id, todoId)}
+                onReflectionChange={(reflection) => handleReflectionChange(block.id, reflection)}
+              />
+              {blocks.length > 1 && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="absolute -right-12 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity"
+                  onClick={() => handleDeleteBlock(block.id)}
+                >
+                  <Trash2 className="h-4 w-4 text-destructive" />
+                </Button>
+              )}
+            </div>
+          </React.Fragment>
         ))}
+
+        {blocks.length < 6 && (
+          <Button
+            variant="outline"
+            className="w-full"
+            onClick={handleAddBlock}
+          >
+            <PlusCircle className="h-4 w-4 mr-2" />
+            블록 추가 ({blocks.length}/6)
+          </Button>
+        )}
       </div>
 
-      <MemoSection 
-        memos={[]} 
-        onAddMemo={handleAddMemo} 
-      />
+      <div className="mt-8">
+        <MemoSection memos={[]} onAddMemo={handleAddMemo} />
+      </div>
     </div>
   )
 }
