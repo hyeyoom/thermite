@@ -4,7 +4,7 @@ import React from 'react'
 import { Card } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Button } from '@/components/ui/button'
-import { PlusCircle } from 'lucide-react'
+import { PlusCircle, X } from 'lucide-react'
 import { Textarea } from '@/components/ui/textarea'
 import {
   Dialog,
@@ -12,6 +12,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
+import { cn } from '@/lib/utils'
 
 interface Todo {
   id: string
@@ -31,6 +32,7 @@ interface BlockProps {
   onAddTodo: (content: string) => void
   onToggleTodo: (id: string) => void
   onReflectionChange: (reflection: string) => void
+  onDeleteTodo: (id: string) => void
 }
 
 const Block = ({
@@ -44,7 +46,8 @@ const Block = ({
   onTimeChange,
   onAddTodo,
   onToggleTodo,
-  onReflectionChange
+  onReflectionChange,
+  onDeleteTodo,
 }: BlockProps) => {
   const [isAddingTodo, setIsAddingTodo] = React.useState(false)
   const [newTodoContent, setNewTodoContent] = React.useState('')
@@ -99,14 +102,25 @@ const Block = ({
           <div className="flex-1 min-w-[300px]">
             <div className="space-y-2">
               {todos.map((todo) => (
-                <div key={todo.id} className="flex items-center gap-2">
+                <div key={todo.id} className="group flex items-center gap-2">
                   <Checkbox
                     checked={todo.isCompleted}
                     onCheckedChange={() => onToggleTodo(todo.id)}
                   />
-                  <span className={todo.isCompleted ? 'line-through text-muted-foreground' : ''}>
+                  <span className={cn(
+                    "flex-1",
+                    todo.isCompleted && "line-through text-muted-foreground"
+                  )}>
                     {todo.content}
                   </span>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                    onClick={() => onDeleteTodo(todo.id)}
+                  >
+                    <X className="h-4 w-4 text-muted-foreground hover:text-destructive" />
+                  </Button>
                 </div>
               ))}
 
@@ -143,9 +157,10 @@ const Block = ({
                   size="sm"
                   onClick={() => setIsAddingTodo(true)}
                   disabled={todos.length >= 6}
+                  className="w-full justify-start"
                 >
                   <PlusCircle className="h-4 w-4 mr-2" />
-                  할 일 추가
+                  할 일 추가 ({todos.length}/6)
                 </Button>
               )}
             </div>

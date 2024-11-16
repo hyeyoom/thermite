@@ -3,7 +3,7 @@
 import React, { useState } from 'react'
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
-import { PlusCircle } from "lucide-react"
+import { PlusCircle, X } from "lucide-react"
 
 interface Memo {
   id: string
@@ -13,10 +13,30 @@ interface Memo {
 interface MemoSectionProps {
   memos: Memo[]
   onAddMemo: (content: string) => void
+  onUpdateMemo?: (id: string, content: string) => void
+  onDeleteMemo?: (id: string) => void
 }
 
-const MemoSection = ({ memos, onAddMemo }: MemoSectionProps) => {
+const MemoSection = ({ 
+  memos, 
+  onAddMemo,
+  onUpdateMemo = () => {},
+  onDeleteMemo = () => {} 
+}: MemoSectionProps) => {
   const [newMemo, setNewMemo] = useState("")
+  const [isComposing, setIsComposing] = useState(false)
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && !isComposing && newMemo.trim()) {
+      e.preventDefault()
+      onAddMemo(newMemo.trim())
+      setNewMemo("")
+    }
+  }
+
+  const handleMemoEdit = (memo: Memo, newContent: string) => {
+    onUpdateMemo(memo.id, newContent)
+  }
 
   return (
     <Card className="p-4 grid grid-cols-[2fr,1fr] gap-4">
@@ -24,18 +44,6 @@ const MemoSection = ({ memos, onAddMemo }: MemoSectionProps) => {
       <div className="space-y-2">
         <div className="flex items-center gap-2">
           <h3 className="font-bold">메모</h3>
-          <Button 
-            variant="ghost" 
-            size="sm"
-            onClick={() => {
-              if (newMemo.trim()) {
-                onAddMemo(newMemo)
-                setNewMemo("")
-              }
-            }}
-          >
-            <PlusCircle className="h-4 w-4" />
-          </Button>
         </div>
         
         {/* 메모 입력 */}
@@ -43,15 +51,31 @@ const MemoSection = ({ memos, onAddMemo }: MemoSectionProps) => {
           type="text"
           value={newMemo}
           onChange={(e) => setNewMemo(e.target.value)}
+          onKeyDown={handleKeyDown}
+          onCompositionStart={() => setIsComposing(true)}
+          onCompositionEnd={() => setIsComposing(false)}
           className="w-full px-3 py-1 rounded-md border"
-          placeholder="새 메모 추가..."
+          placeholder="새 메모 추가... (Enter)"
         />
         
         {/* 메모 목록 */}
-        <ul className="space-y-1 list-disc list-inside">
+        <ul className="space-y-2">
           {memos.map((memo) => (
-            <li key={memo.id} className="text-sm">
-              {memo.content}
+            <li key={memo.id} className="group flex items-center gap-2 border-b border-muted">
+              <input
+                type="text"
+                value={memo.content}
+                onChange={(e) => handleMemoEdit(memo, e.target.value)}
+                className="flex-1 text-sm bg-transparent border-none focus:outline-none focus:ring-0 px-2 py-1"
+              />
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                onClick={() => onDeleteMemo(memo.id)}
+              >
+                <X className="h-4 w-4 text-muted-foreground hover:text-destructive" />
+              </Button>
             </li>
           ))}
         </ul>

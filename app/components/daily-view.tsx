@@ -8,9 +8,30 @@ import { PlusCircle, Trash2 } from "lucide-react"
 import Block from './block'
 import MemoSection from './memo-section'
 
+interface Todo {
+  id: string
+  content: string
+  isCompleted: boolean
+}
+
+interface BlockType {
+  id: string
+  number: number
+  title: string
+  startTime: string
+  endTime: string
+  todos: Todo[]
+  reflection: string
+}
+
+interface Memo {
+  id: string
+  content: string
+}
+
 const DailyView = () => {
   const today = new Date()
-  const [blocks, setBlocks] = React.useState([
+  const [blocks, setBlocks] = React.useState<BlockType[]>([
     {
       id: '1',
       number: 1,
@@ -21,6 +42,7 @@ const DailyView = () => {
       reflection: ''
     }
   ])
+  const [memos, setMemos] = React.useState<Memo[]>([])
 
   const handleTitleChange = (blockId: string, title: string) => {
     setBlocks(blocks.map(block => 
@@ -58,7 +80,17 @@ const DailyView = () => {
   }
 
   const handleAddMemo = (content: string) => {
-    console.log('새 메모:', content)
+    setMemos([...memos, { id: Date.now().toString(), content }])
+  }
+
+  const handleUpdateMemo = (id: string, content: string) => {
+    setMemos(memos.map(memo => 
+      memo.id === id ? { ...memo, content } : memo
+    ))
+  }
+
+  const handleDeleteMemo = (id: string) => {
+    setMemos(memos.filter(memo => memo.id !== id))
   }
 
   const handleReflectionChange = (blockId: string, reflection: string) => {
@@ -99,6 +131,18 @@ const DailyView = () => {
         number: index + 1
       }))
     )
+  }
+
+  const handleDeleteTodo = (blockId: string, todoId: string) => {
+    setBlocks(blocks.map(block => {
+      if (block.id === blockId) {
+        return {
+          ...block,
+          todos: block.todos.filter(todo => todo.id !== todoId)
+        }
+      }
+      return block
+    }))
   }
 
   return (
@@ -142,6 +186,7 @@ const DailyView = () => {
                 onTimeChange={(start, end) => handleTimeChange(block.id, start, end)}
                 onAddTodo={(content) => handleAddTodo(block.id, content)}
                 onToggleTodo={(todoId) => handleToggleTodo(block.id, todoId)}
+                onDeleteTodo={(todoId) => handleDeleteTodo(block.id, todoId)}
                 onReflectionChange={(reflection) => handleReflectionChange(block.id, reflection)}
               />
               {blocks.length > 1 && (
@@ -171,7 +216,12 @@ const DailyView = () => {
       </div>
 
       <div className="mt-8">
-        <MemoSection memos={[]} onAddMemo={handleAddMemo} />
+        <MemoSection 
+          memos={memos} 
+          onAddMemo={handleAddMemo}
+          onUpdateMemo={handleUpdateMemo}
+          onDeleteMemo={handleDeleteMemo}
+        />
       </div>
     </div>
   )
