@@ -54,6 +54,7 @@ const Block = ({
   const [isTimeDialogOpen, setIsTimeDialogOpen] = React.useState(false)
   const [tempStartTime, setTempStartTime] = React.useState(startTime)
   const [tempEndTime, setTempEndTime] = React.useState(endTime)
+  const [isEditingTitle, setIsEditingTitle] = React.useState(false)
 
   const handleAddTodo = () => {
     if (newTodoContent.trim()) {
@@ -68,9 +69,17 @@ const Block = ({
     setIsTimeDialogOpen(false)
   }
 
+  const handleTitleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault()
+      e.currentTarget.blur()
+      setIsEditingTitle(false)
+    }
+  }
+
   return (
     <>
-      <Card className="p-4">
+      <Card className="p-4 border-2">
         <div className="flex gap-4">
           {/* 블록 번호와 시간 */}
           <div className="flex-none w-24">
@@ -89,13 +98,25 @@ const Block = ({
 
           {/* 블록 제목 */}
           <div className="flex-none w-48">
-            <input
-              type="text"
-              value={title}
-              onChange={(e) => onTitleChange(e.target.value)}
-              className="w-full text-lg font-semibold bg-transparent border-none focus:outline-none focus:ring-1 focus:ring-ring rounded px-2"
-              placeholder="블록 제목"
-            />
+            {isEditingTitle ? (
+              <input
+                type="text"
+                value={title}
+                onChange={(e) => onTitleChange(e.target.value)}
+                onKeyDown={handleTitleKeyDown}
+                onBlur={() => setIsEditingTitle(false)}
+                className="w-full text-lg font-semibold bg-transparent border-none focus:outline-none focus:ring-1 focus:ring-ring px-2"
+                placeholder="블록 제목"
+                autoFocus
+              />
+            ) : (
+              <button
+                onClick={() => setIsEditingTitle(true)}
+                className="w-full text-left text-lg font-semibold px-2 hover:bg-muted/50 rounded"
+              >
+                {title || "블록 제목"}
+              </button>
+            )}
           </div>
 
           {/* Todo 리스트 */}
@@ -130,7 +151,7 @@ const Block = ({
                     type="text"
                     value={newTodoContent}
                     onChange={(e) => setNewTodoContent(e.target.value)}
-                    className="flex-1 px-2 py-1 text-sm border rounded"
+                    className="flex-1 text-sm px-2 py-1 border-b-2 border-input focus:outline-none focus:border-foreground transition-colors"
                     placeholder="할 일을 입력하세요"
                     onKeyDown={(e) => {
                       if (e.key === 'Enter') {
@@ -171,7 +192,7 @@ const Block = ({
             <Textarea
               value={reflection}
               onChange={(e) => onReflectionChange(e.target.value)}
-              className="w-full h-24 resize-none"
+              className="w-full h-24 resize-none border-none focus:ring-0 hover:bg-muted/50 transition-colors"
               placeholder="회고 메모..."
             />
           </div>
