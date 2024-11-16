@@ -84,124 +84,119 @@ const Block = ({
   return (
     <>
       <Card className="p-4 border-2 relative group">
-        <div className="flex flex-col gap-4">
-          {/* 헤더 영역 */}
-          <div className="flex items-center gap-4">
-            <button
-              onClick={() => setIsTimeDialogOpen(true)}
-              className="flex-none w-12 h-12 flex flex-col items-center justify-center bg-muted rounded-full hover:bg-muted/80 transition-colors"
-            >
-              <span className="text-lg font-semibold">{number}</span>
-              {startTime && endTime && (
-                <span className="text-[10px] text-muted-foreground">
-                  {startTime}~{endTime}
-                </span>
-              )}
-            </button>
-            
-            {/* 제목 (모바일/데스크톱 통합) */}
-            <div className="flex-1 min-w-0">
-              {isEditingTitle ? (
-                <input
-                  type="text"
-                  value={title}
-                  onChange={(e) => onTitleChange(e.target.value)}
-                  onKeyDown={handleTitleKeyDown}
-                  onBlur={() => setIsEditingTitle(false)}
-                  className="w-full text-lg font-semibold bg-transparent border-none focus:outline-none focus:ring-1 focus:ring-ring px-2"
-                  placeholder="블록 제목"
-                  autoFocus
-                />
+        <div className="flex flex-col lg:flex-row lg:items-center gap-4">
+          {/* 블록 번호 */}
+          <button
+            onClick={() => setIsTimeDialogOpen(true)}
+            className="flex-none w-12 h-12 flex flex-col items-center justify-center bg-muted rounded-full hover:bg-muted/80 transition-colors"
+          >
+            <span className="text-lg font-semibold">{number}</span>
+            {startTime && endTime && (
+              <span className="text-[10px] text-muted-foreground">
+                {startTime}~{endTime}
+              </span>
+            )}
+          </button>
+          
+          {/* 제목 */}
+          <div className="flex-none lg:w-48">
+            {isEditingTitle ? (
+              <input
+                type="text"
+                value={title}
+                onChange={(e) => onTitleChange(e.target.value)}
+                onKeyDown={handleTitleKeyDown}
+                onBlur={() => setIsEditingTitle(false)}
+                className="w-full text-lg font-semibold bg-transparent border-none focus:outline-none focus:ring-1 focus:ring-ring px-2"
+                placeholder="블록 제목"
+                autoFocus
+              />
+            ) : (
+              <button
+                onClick={() => setIsEditingTitle(true)}
+                className="w-full text-left text-lg font-semibold px-2 hover:bg-muted/50 rounded truncate"
+              >
+                {title || "블록 제목"}
+              </button>
+            )}
+          </div>
+
+          {/* Todo 리스트 */}
+          <div className="flex-1 min-w-0">
+            <div className="space-y-2">
+              {todos.map((todo) => (
+                <div key={todo.id} className="group flex items-center gap-2">
+                  <Checkbox
+                    checked={todo.isCompleted}
+                    onCheckedChange={() => onToggleTodo(todo.id)}
+                  />
+                  <span className={cn(
+                    "flex-1",
+                    todo.isCompleted && "line-through text-muted-foreground"
+                  )}>
+                    {todo.content}
+                  </span>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                    onClick={() => onDeleteTodo(todo.id)}
+                  >
+                    <X className="h-4 w-4 text-muted-foreground hover:text-destructive" />
+                  </Button>
+                </div>
+              ))}
+
+              {isAddingTodo ? (
+                <div className="flex items-center gap-2">
+                  <input
+                    type="text"
+                    value={newTodoContent}
+                    onChange={(e) => setNewTodoContent(e.target.value)}
+                    className="flex-1 text-sm px-2 py-1 border-b-2 border-input focus:outline-none focus:border-foreground transition-colors"
+                    placeholder="할 일을 입력하세요"
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        handleAddTodo()
+                      }
+                    }}
+                    autoFocus
+                  />
+                  <Button size="sm" onClick={handleAddTodo}>추가</Button>
+                  <Button 
+                    size="sm" 
+                    variant="ghost" 
+                    onClick={() => {
+                      setIsAddingTodo(false)
+                      setNewTodoContent('')
+                    }}
+                  >
+                    취소
+                  </Button>
+                </div>
               ) : (
-                <button
-                  onClick={() => setIsEditingTitle(true)}
-                  className="w-full text-left text-lg font-semibold px-2 hover:bg-muted/50 rounded truncate"
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setIsAddingTodo(true)}
+                  disabled={todos.length >= 6}
+                  className="w-full justify-start"
                 >
-                  {title || "블록 제목"}
-                </button>
+                  <PlusCircle className="h-4 w-4 mr-2" />
+                  할 일 추가 ({todos.length}/6)
+                </Button>
               )}
             </div>
           </div>
 
-          {/* 컨텐츠 영역 */}
-          <div className="grid grid-cols-1 lg:grid-cols-[1fr,auto] gap-4">
-            {/* Todo 리스트 */}
-            <div className="min-w-0">
-              <div className="space-y-2">
-                {todos.map((todo) => (
-                  <div key={todo.id} className="group flex items-center gap-2">
-                    <Checkbox
-                      checked={todo.isCompleted}
-                      onCheckedChange={() => onToggleTodo(todo.id)}
-                    />
-                    <span className={cn(
-                      "flex-1",
-                      todo.isCompleted && "line-through text-muted-foreground"
-                    )}>
-                      {todo.content}
-                    </span>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
-                      onClick={() => onDeleteTodo(todo.id)}
-                    >
-                      <X className="h-4 w-4 text-muted-foreground hover:text-destructive" />
-                    </Button>
-                  </div>
-                ))}
-
-                {isAddingTodo ? (
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="text"
-                      value={newTodoContent}
-                      onChange={(e) => setNewTodoContent(e.target.value)}
-                      className="flex-1 text-sm px-2 py-1 border-b-2 border-input focus:outline-none focus:border-foreground transition-colors"
-                      placeholder="할 일을 입력하세요"
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter') {
-                          handleAddTodo()
-                        }
-                      }}
-                      autoFocus
-                    />
-                    <Button size="sm" onClick={handleAddTodo}>추가</Button>
-                    <Button 
-                      size="sm" 
-                      variant="ghost" 
-                      onClick={() => {
-                        setIsAddingTodo(false)
-                        setNewTodoContent('')
-                      }}
-                    >
-                      취소
-                    </Button>
-                  </div>
-                ) : (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setIsAddingTodo(true)}
-                    disabled={todos.length >= 6}
-                    className="w-full justify-start"
-                  >
-                    <PlusCircle className="h-4 w-4 mr-2" />
-                    할 일 추가 ({todos.length}/6)
-                  </Button>
-                )}
-              </div>
-            </div>
-
-            {/* 회고 메모 */}
-            <div className="lg:w-64">
-              <Textarea
-                value={reflection}
-                onChange={(e) => onReflectionChange(e.target.value)}
-                className="w-full h-24 resize-none border-none focus:ring-0 hover:bg-muted/50 transition-colors"
-                placeholder="회고 메모..."
-              />
-            </div>
+          {/* 회고 메모 */}
+          <div className="flex-none lg:w-64">
+            <Textarea
+              value={reflection}
+              onChange={(e) => onReflectionChange(e.target.value)}
+              className="w-full h-24 resize-none border-none focus:ring-0 hover:bg-muted/50 transition-colors"
+              placeholder="회고 메모..."
+            />
           </div>
         </div>
 
