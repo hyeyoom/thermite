@@ -80,9 +80,9 @@ const Block = ({
   return (
     <>
       <Card className="p-4 border-2">
-        <div className="flex gap-4">
+        <div className="flex flex-col lg:flex-row gap-4">
           {/* 블록 번호와 시간 */}
-          <div className="flex-none w-24">
+          <div className="flex lg:flex-none lg:w-24 items-center gap-4 lg:gap-0">
             <button
               onClick={() => setIsTimeDialogOpen(true)}
               className="w-12 h-12 flex flex-col items-center justify-center bg-muted rounded-full hover:bg-muted/80 transition-colors"
@@ -94,10 +94,33 @@ const Block = ({
                 </span>
               )}
             </button>
+            
+            {/* 모바일에서만 보이는 제목 */}
+            <div className="flex-1 lg:hidden">
+              {isEditingTitle ? (
+                <input
+                  type="text"
+                  value={title}
+                  onChange={(e) => onTitleChange(e.target.value)}
+                  onKeyDown={handleTitleKeyDown}
+                  onBlur={() => setIsEditingTitle(false)}
+                  className="w-full text-lg font-semibold bg-transparent border-none focus:outline-none focus:ring-1 focus:ring-ring px-2"
+                  placeholder="블록 제목"
+                  autoFocus
+                />
+              ) : (
+                <button
+                  onClick={() => setIsEditingTitle(true)}
+                  className="w-full text-left text-lg font-semibold px-2 hover:bg-muted/50 rounded"
+                >
+                  {title || "블록 제목"}
+                </button>
+              )}
+            </div>
           </div>
 
-          {/* 블록 제목 */}
-          <div className="flex-none w-48">
+          {/* 데스크톱에서만 보이는 제목 */}
+          <div className="hidden lg:block lg:flex-none lg:w-48">
             {isEditingTitle ? (
               <input
                 type="text"
@@ -120,7 +143,7 @@ const Block = ({
           </div>
 
           {/* Todo 리스트 */}
-          <div className="flex-1 min-w-[300px]">
+          <div className="flex-1 min-w-0 lg:min-w-[300px]">
             <div className="space-y-2">
               {todos.map((todo) => (
                 <div key={todo.id} className="group flex items-center gap-2">
@@ -188,7 +211,7 @@ const Block = ({
           </div>
 
           {/* 회고 메모 */}
-          <div className="flex-none w-64">
+          <div className="lg:flex-none lg:w-64">
             <Textarea
               value={reflection}
               onChange={(e) => onReflectionChange(e.target.value)}

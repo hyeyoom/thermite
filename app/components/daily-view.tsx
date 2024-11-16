@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { PlusCircle, Trash2 } from "lucide-react"
 import Block from './block'
 import MemoSection from './memo-section'
+import { ThemeToggle } from "../../components/theme-toggle"
 
 interface Todo {
   id: string
@@ -156,6 +157,7 @@ const DailyView = () => {
             {format(today, 'yyyy.MM.dd')}
           </span>
         </div>
+        <ThemeToggle />
       </div>
 
       <div className="space-y-4">

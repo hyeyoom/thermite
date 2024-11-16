@@ -61,7 +61,7 @@ const MemoSection = ({
   }
 
   return (
-    <Card className="p-4 grid grid-cols-[2fr,1fr] gap-4 border-2">
+    <Card className="p-4 grid grid-cols-1 lg:grid-cols-[2fr,1fr] gap-4 border-2">
       {/* 메모 리스트 영역 */}
       <div className="space-y-2">
         <div className="flex items-center justify-between">
