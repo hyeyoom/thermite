@@ -5,16 +5,67 @@ import { Card } from "@/components/ui/card"
 import { format } from "date-fns"
 import { ko } from "date-fns/locale"
 import MemoSection from './memo-section'
+import Block from './block'
 
 const DailyView = () => {
   const today = new Date()
-  
+  const [blocks, setBlocks] = React.useState([
+    {
+      id: '1',
+      number: 1,
+      title: '',
+      todos: [],
+      reflection: ''
+    }
+  ])
+
+  const handleTitleChange = (blockId: string, title: string) => {
+    setBlocks(blocks.map(block => 
+      block.id === blockId ? { ...block, title } : block
+    ))
+  }
+
+  const handleAddTodo = (blockId: string, content: string) => {
+    setBlocks(blocks.map(block => {
+      if (block.id === blockId) {
+        return {
+          ...block,
+          todos: [
+            ...block.todos,
+            { id: Date.now().toString(), content, isCompleted: false }
+          ]
+        }
+      }
+      return block
+    }))
+  }
+
+  const handleToggleTodo = (blockId: string, todoId: string) => {
+    setBlocks(blocks.map(block => {
+      if (block.id === blockId) {
+        return {
+          ...block,
+          todos: block.todos.map(todo => 
+            todo.id === todoId ? { ...todo, isCompleted: !todo.isCompleted } : todo
+          )
+        }
+      }
+      return block
+    }))
+  }
+
   const handleAddMemo = (content: string) => {
     console.log('새 메모:', content)
   }
-  
+
+  const handleReflectionChange = (blockId: string, reflection: string) => {
+    setBlocks(blocks.map(block => 
+      block.id === blockId ? { ...block, reflection } : block
+    ))
+  }
+
   return (
-    <div className="max-w-4xl mx-auto">
+    <div className="max-w-6xl mx-auto">
       <div className="flex justify-between items-center mb-6">
         <div className="flex items-center gap-2">
           <span className="font-bold text-lg">
@@ -27,7 +78,19 @@ const DailyView = () => {
       </div>
 
       <div className="space-y-4">
-        {/* 블록 컴포넌트들이 들어갈 예정 */}
+        {blocks.map(block => (
+          <Block
+            key={block.id}
+            number={block.number}
+            title={block.title}
+            todos={block.todos}
+            reflection={block.reflection}
+            onTitleChange={(title) => handleTitleChange(block.id, title)}
+            onAddTodo={(content) => handleAddTodo(block.id, content)}
+            onToggleTodo={(todoId) => handleToggleTodo(block.id, todoId)}
+            onReflectionChange={(reflection) => handleReflectionChange(block.id, reflection)}
+          />
+        ))}
       </div>
 
       <MemoSection 
