@@ -85,16 +85,20 @@ const Block = ({
     <>
       <Card className="p-4 border-2 relative group">
         <div className="flex flex-col lg:flex-row lg:items-center gap-4">
-          {/* 블록 번호 */}
+          {/* 블록 번호와 시간 */}
           <button
             onClick={() => setIsTimeDialogOpen(true)}
-            className="flex-none w-12 h-12 flex flex-col items-center justify-center bg-muted rounded-full hover:bg-muted/80 transition-colors"
+            className="flex-none w-14 h-14 flex flex-col items-center justify-center rounded-lg bg-muted hover:bg-muted/80 transition-colors"
           >
             <span className="text-lg font-semibold">{number}</span>
-            {startTime && endTime && (
-              <span className="text-[10px] text-muted-foreground">
-                {startTime}~{endTime}
-              </span>
+            {startTime && endTime ? (
+              <div className="text-[11px] text-muted-foreground leading-tight">
+                <span>{startTime}</span>
+                <span className="mx-0.5">~</span>
+                <span>{endTime}</span>
+              </div>
+            ) : (
+              <span className="text-[11px] text-muted-foreground">시간 설정</span>
             )}
           </button>
           
@@ -126,20 +130,28 @@ const Block = ({
             <div className="space-y-2">
               {todos.map((todo) => (
                 <div key={todo.id} className="group flex items-center gap-2">
-                  <Checkbox
-                    checked={todo.isCompleted}
-                    onCheckedChange={() => onToggleTodo(todo.id)}
-                  />
-                  <span className={cn(
-                    "flex-1",
-                    todo.isCompleted && "line-through text-muted-foreground"
-                  )}>
-                    {todo.content}
-                  </span>
+                  <div 
+                    className="flex items-center gap-2 flex-1 min-w-0"
+                    onClick={() => onToggleTodo(todo.id)}
+                  >
+                    <Checkbox
+                      checked={todo.isCompleted}
+                      onCheckedChange={() => onToggleTodo(todo.id)}
+                      className="h-5 w-5 lg:h-4 lg:w-4"
+                    />
+                    <span 
+                      className={cn(
+                        "flex-1 min-w-0 truncate py-1",
+                        todo.isCompleted && "line-through text-muted-foreground"
+                      )}
+                    >
+                      {todo.content}
+                    </span>
+                  </div>
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                    className="h-6 w-6 p-0 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity flex-none"
                     onClick={() => onDeleteTodo(todo.id)}
                   >
                     <X className="h-4 w-4 text-muted-foreground hover:text-destructive" />
@@ -226,29 +238,51 @@ const Block = ({
       </Card>
 
       <Dialog open={isTimeDialogOpen} onOpenChange={setIsTimeDialogOpen}>
-        <DialogContent>
+        <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
             <DialogTitle>시간 범위 설정</DialogTitle>
           </DialogHeader>
           <div className="flex flex-col gap-4 py-4">
-            <div className="flex items-center gap-4">
-              <div className="flex-1">
-                <label className="text-sm font-medium mb-1 block">시작 시간</label>
-                <input
-                  type="time"
-                  className="w-full px-3 py-2 border rounded"
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <label className="text-sm font-medium">시작 시간</label>
+                <select
+                  className="w-full px-3 py-2 rounded-md border border-input bg-background"
                   value={tempStartTime}
                   onChange={(e) => setTempStartTime(e.target.value)}
-                />
+                >
+                  <option value="">선택...</option>
+                  {Array.from({ length: 48 }).map((_, i) => {
+                    const hour = Math.floor(i / 2).toString().padStart(2, '0')
+                    const minute = i % 2 === 0 ? '00' : '30'
+                    const time = `${hour}:${minute}`
+                    return (
+                      <option key={time} value={time}>
+                        {time}
+                      </option>
+                    )
+                  })}
+                </select>
               </div>
-              <div className="flex-1">
-                <label className="text-sm font-medium mb-1 block">종료 시간</label>
-                <input
-                  type="time"
-                  className="w-full px-3 py-2 border rounded"
+              <div className="space-y-2">
+                <label className="text-sm font-medium">종료 시간</label>
+                <select
+                  className="w-full px-3 py-2 rounded-md border border-input bg-background"
                   value={tempEndTime}
                   onChange={(e) => setTempEndTime(e.target.value)}
-                />
+                >
+                  <option value="">선택...</option>
+                  {Array.from({ length: 48 }).map((_, i) => {
+                    const hour = Math.floor(i / 2).toString().padStart(2, '0')
+                    const minute = i % 2 === 0 ? '00' : '30'
+                    const time = `${hour}:${minute}`
+                    return (
+                      <option key={time} value={time}>
+                        {time}
+                      </option>
+                    )
+                  })}
+                </select>
               </div>
             </div>
             <div className="flex justify-end gap-2">

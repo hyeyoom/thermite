@@ -113,7 +113,7 @@ const MemoSection = ({
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                className="h-6 w-6 p-0 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity"
                 onClick={() => onDeleteMemo(memo.id)}
               >
                 <X className="h-4 w-4 text-muted-foreground hover:text-destructive" />
@@ -154,7 +154,7 @@ const MemoSection = ({
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                        className="h-6 w-6 p-0 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity"
                         onClick={() => handleDeleteEvaluation(item.id)}
                       >
                         <X className="h-4 w-4 text-muted-foreground hover:text-destructive" />
