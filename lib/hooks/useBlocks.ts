@@ -1,9 +1,10 @@
 import { useState, useEffect, useCallback } from 'react'
-import { BlockType, Memo } from '@/lib/types'
+import { Assessment, BlockType, Memo } from '@/lib/types'
 
 export function useBlocks(userId: string, date: string) {
   const [blocks, setBlocks] = useState<BlockType[]>([])
   const [memos, setMemos] = useState<Memo[]>([])
+  const [assessments, setAssessments] = useState<Assessment[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<Error | null>(null)
 
@@ -105,7 +106,7 @@ export function useBlocks(userId: string, date: string) {
         throw new Error('Failed to add todo')
       }
       const newTodo = await response.json()
-      
+
       setBlocks(blocks.map(block =>
         block.id === blockId
           ? { ...block, todos: [...block.todos, newTodo] }
@@ -120,7 +121,7 @@ export function useBlocks(userId: string, date: string) {
     try {
       const block = blocks.find(b => b.id === blockId)!
       const todo = block.todos.find(t => t.id === todoId)!
-      
+
       const response = await fetch(
         `/api/users/${userId}/blocks/${date}/${blockId}/todos/${todoId}`,
         {
@@ -235,27 +236,63 @@ export function useBlocks(userId: string, date: string) {
     }
   }
 
-  const updateReflection = async (blockId: string, reflection: string) => {
+  const addAssessment = async (type: 'good' | 'bad' | 'next', content: string) => {
     try {
       const response = await fetch(
-        `/api/users/${userId}/blocks/${date}/${blockId}/reflection`,
+        `/api/users/${userId}/assessments/${date}`,
         {
-          method: 'PATCH',
+          method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ reflection })
+          body: JSON.stringify({ type, content })
         }
       )
       if (!response.ok) {
-        throw new Error('Failed to update reflection')
+        throw new Error('Failed to add assessment')
       }
+      const newAssessment = await response.json()
+      setAssessments([...assessments, newAssessment])
+    } catch (err) {
+      setError(err instanceof Error ? err : new Error('Failed to add assessment'))
+    }
+  }
 
-      setBlocks(blocks.map(block =>
-        block.id === blockId
-          ? { ...block, reflection }
-          : block
+  const updateAssessment = async (assessmentId: string, content: string) => {
+    try {
+      const response = await fetch(
+        `/api/users/${userId}/assessments/${date}/${assessmentId}`,
+        {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ content })
+        }
+      )
+      if (!response.ok) {
+        throw new Error('Failed to update assessment')
+      }
+      setAssessments(assessments.map(assessment =>
+        assessment.id === assessmentId
+          ? { ...assessment, content }
+          : assessment
       ))
     } catch (err) {
-      setError(err instanceof Error ? err : new Error('Failed to update reflection'))
+      setError(err instanceof Error ? err : new Error('Failed to update assessment'))
+    }
+  }
+
+  const deleteAssessment = async (assessmentId: string) => {
+    try {
+      const response = await fetch(
+        `/api/users/${userId}/assessments/${date}/${assessmentId}`,
+        {
+          method: 'DELETE'
+        }
+      )
+      if (!response.ok) {
+        throw new Error('Failed to delete assessment')
+      }
+      setAssessments(assessments.filter(assessment => assessment.id !== assessmentId))
+    } catch (err) {
+      setError(err instanceof Error ? err : new Error('Failed to delete assessment'))
     }
   }
 
@@ -275,9 +312,26 @@ export function useBlocks(userId: string, date: string) {
     loadMemos()
   }, [userId, date])
 
+  useEffect(() => {
+    const loadAssessments = async () => {
+      try {
+        const response = await fetch(`/api/users/${userId}/assessments/${date}`)
+        if (!response.ok) {
+          throw new Error('Failed to fetch assessments')
+        }
+        const data = await response.json()
+        setAssessments(data)
+      } catch (err) {
+        setError(err instanceof Error ? err : new Error('Failed to fetch assessments'))
+      }
+    }
+    loadAssessments()
+  }, [userId, date])
+
   return {
     blocks,
     memos,
+    assessments,
     isLoading,
     error,
     addBlock,
@@ -289,6 +343,8 @@ export function useBlocks(userId: string, date: string) {
     addMemo,
     updateMemo,
     deleteMemo,
-    updateReflection
+    addAssessment,
+    updateAssessment,
+    deleteAssessment
   }
 }

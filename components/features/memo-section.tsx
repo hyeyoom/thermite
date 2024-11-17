@@ -2,62 +2,49 @@
 
 import React, {useState} from 'react'
 import {Button} from "@/components/ui/button"
-import {Card} from "@/components/ui/card"
 import {PlusCircle, X} from "lucide-react"
-import {Assessment, Memo, MemoSectionProps} from "@/lib/types";
+import {Memo, MemoSectionProps} from "@/lib/types";
+import {debounce} from 'lodash'
+import {Input} from "@/components/ui/input"
 
 const MemoSection = ({
                          memos,
+                         assessments = [],
                          onAddMemo,
-                         onUpdateMemo = () => {
-                         },
-                         onDeleteMemo = () => {
-                         }
+                         onUpdateMemo = () => {},
+                         onDeleteMemo = () => {},
+                         onAddAssessment = () => {},
+                         onUpdateAssessment = () => {},
+                         onDeleteAssessment = () => {},
                      }: MemoSectionProps) => {
-    const [newMemo, setNewMemo] = useState("")
-    const [isComposing, setIsComposing] = useState(false)
     const [isAddingMemo, setIsAddingMemo] = useState(false)
-    const [evaluations, setEvaluations] = useState<Assessment[]>([])
+    const [newMemoContent, setNewMemoContent] = useState('')
     const [isAddingEvaluation, setIsAddingEvaluation] = useState<'good' | 'bad' | 'next' | null>(null)
-    const [newEvaluation, setNewEvaluation] = useState("")
+    const [newEvaluationContent, setNewEvaluationContent] = useState('')
 
-    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-        if (e.key === 'Enter' && !isComposing && newMemo.trim()) {
-            e.preventDefault()
-            onAddMemo(newMemo.trim())
-            setNewMemo("")
+    const handleAddMemo = () => {
+        if (newMemoContent.trim()) {
+            onAddMemo(newMemoContent.trim())
+            setNewMemoContent('')
             setIsAddingMemo(false)
         }
     }
 
-    const handleMemoEdit = (memo: Memo, newContent: string) => {
-        onUpdateMemo(memo.id, newContent)
-    }
+    const handleMemoEdit = debounce((memo: Memo, content: string) => {
+        onUpdateMemo(memo.id, content)
+    }, 500)
 
-    const handleAddEvaluation = (type: 'good' | 'bad' | 'next') => {
-        if (newEvaluation.trim()) {
-            setEvaluations([
-                ...evaluations,
-                {id: Date.now().toString(), type, content: newEvaluation.trim()}
-            ])
-            setNewEvaluation("")
+    const handleAddEvaluation = () => {
+        if (isAddingEvaluation && newEvaluationContent.trim()) {
+            onAddAssessment(isAddingEvaluation, newEvaluationContent.trim())
+            setNewEvaluationContent('')
             setIsAddingEvaluation(null)
         }
     }
 
-    const handleEvaluationEdit = (id: string, content: string) => {
-        setEvaluations(evaluations.map(evaluation =>
-            evaluation.id === id ? {...evaluation, content} : evaluation
-        ))
-    }
-
-    const handleDeleteEvaluation = (id: string) => {
-        setEvaluations(evaluations.filter(evaluation => evaluation.id !== id))
-    }
-
     return (
-        <Card className="p-4 grid grid-cols-1 lg:grid-cols-[2fr,1fr] gap-6 border-2">
-            {/* 메모 리스트 영역 */}
+        <div className="space-y-8">
+            {/* 메모 섹션 */}
             <div className="space-y-4">
                 <div className="flex items-center justify-between">
                     <h3 className="font-bold">메모</h3>
@@ -72,17 +59,30 @@ const MemoSection = ({
 
                 {isAddingMemo && (
                     <div className="flex items-center gap-2">
-                        <input
-                            type="text"
-                            value={newMemo}
-                            onChange={(e) => setNewMemo(e.target.value)}
-                            onKeyDown={handleKeyDown}
-                            onCompositionStart={() => setIsComposing(true)}
-                            onCompositionEnd={() => setIsComposing(false)}
-                            className="flex-1 text-sm px-2 py-1 border-b-2 border-input focus:outline-none focus:border-foreground transition-colors"
-                            placeholder="새 메모 입력... (Enter)"
+                        <Input
+                            value={newMemoContent}
+                            onChange={(e) => setNewMemoContent(e.target.value)}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter' && !e.shiftKey) {
+                                    e.preventDefault()
+                                    handleAddMemo()
+                                }
+                            }}
+                            placeholder="새 메모..."
+                            className="flex-1"
                             autoFocus
                         />
+                        <Button size="sm" onClick={handleAddMemo}>추가</Button>
+                        <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => {
+                                setIsAddingMemo(false)
+                                setNewMemoContent('')
+                            }}
+                        >
+                            취소
+                        </Button>
                     </div>
                 )}
 
@@ -98,7 +98,7 @@ const MemoSection = ({
                             <Button
                                 variant="ghost"
                                 size="icon"
-                                className="h-6 w-6 p-0 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity"
+                                className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
                                 onClick={() => onDeleteMemo(memo.id)}
                             >
                                 <X className="h-4 w-4 text-muted-foreground hover:text-destructive"/>
@@ -108,14 +108,16 @@ const MemoSection = ({
                 </ul>
             </div>
 
-            {/* 평가 블록 */}
+            {/* 평가 섹션 */}
             <div className="space-y-4">
                 <h3 className="font-bold">평가</h3>
                 <div className="space-y-6">
                     {['good', 'bad', 'next'].map((type) => (
                         <div key={type} className="space-y-2">
                             <div className="flex items-center justify-between">
-                                <span className="text-sm font-medium capitalize">{type}</span>
+                                <span className="text-sm font-medium capitalize">
+                                    {type === 'good' ? '잘한 점' : type === 'bad' ? '아쉬운 점' : '다음에는'}
+                                </span>
                                 <Button
                                     variant="ghost"
                                     size="sm"
@@ -125,52 +127,62 @@ const MemoSection = ({
                                 </Button>
                             </div>
 
-                            <ul className="space-y-1">
-                                {evaluations
-                                    .filter(item => item.type === type)
-                                    .map(item => (
-                                        <li key={item.id}
-                                            className="group flex items-center gap-2 text-sm border-b-2 border-muted py-1">
+                            {isAddingEvaluation === type && (
+                                <div className="flex items-center gap-2">
+                                    <Input
+                                        value={newEvaluationContent}
+                                        onChange={(e) => setNewEvaluationContent(e.target.value)}
+                                        onKeyDown={(e) => {
+                                            if (e.key === 'Enter' && !e.shiftKey) {
+                                                e.preventDefault()
+                                                handleAddEvaluation()
+                                            }
+                                        }}
+                                        placeholder="새로운 항목 추가..."
+                                        className="flex-1"
+                                        autoFocus
+                                    />
+                                    <Button size="sm" onClick={handleAddEvaluation}>추가</Button>
+                                    <Button
+                                        size="sm"
+                                        variant="ghost"
+                                        onClick={() => {
+                                            setIsAddingEvaluation(null)
+                                            setNewEvaluationContent('')
+                                        }}
+                                    >
+                                        취소
+                                    </Button>
+                                </div>
+                            )}
+
+                            <ul className="space-y-2">
+                                {assessments
+                                    .filter(assessment => assessment.type === type)
+                                    .map((assessment) => (
+                                        <li key={assessment.id} className="group flex items-center gap-2 border-b-2 border-muted">
                                             <input
                                                 type="text"
-                                                value={item.content}
-                                                onChange={(e) => handleEvaluationEdit(item.id, e.target.value)}
-                                                className="flex-1 bg-transparent border-none focus:outline-none focus:ring-0 px-0"
+                                                value={assessment.content}
+                                                onChange={(e) => onUpdateAssessment(assessment.id, e.target.value)}
+                                                className="flex-1 text-sm bg-transparent border-none focus:outline-none focus:ring-0 px-2 py-1"
                                             />
                                             <Button
                                                 variant="ghost"
                                                 size="icon"
-                                                className="h-6 w-6 p-0 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity"
-                                                onClick={() => handleDeleteEvaluation(item.id)}
+                                                className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                                                onClick={() => onDeleteAssessment(assessment.id)}
                                             >
                                                 <X className="h-4 w-4 text-muted-foreground hover:text-destructive"/>
                                             </Button>
                                         </li>
                                     ))}
                             </ul>
-
-                            {isAddingEvaluation === type && (
-                                <div className="flex items-center gap-2">
-                                    <input
-                                        type="text"
-                                        value={newEvaluation}
-                                        onChange={(e) => setNewEvaluation(e.target.value)}
-                                        className="flex-1 text-sm px-2 py-1 border-b-2 border-input focus:outline-none focus:border-foreground transition-colors"
-                                        placeholder={`${type} 입력...`}
-                                        onKeyDown={(e) => {
-                                            if (e.key === 'Enter') {
-                                                handleAddEvaluation(type as 'good' | 'bad' | 'next')
-                                            }
-                                        }}
-                                        autoFocus
-                                    />
-                                </div>
-                            )}
                         </div>
                     ))}
                 </div>
             </div>
-        </Card>
+        </div>
     )
 }
 

@@ -16,6 +16,7 @@ const DailyView = () => {
     const {
         blocks,
         memos,
+        assessments,
         isLoading,
         error,
         addBlock,
@@ -27,7 +28,9 @@ const DailyView = () => {
         addMemo,
         updateMemo,
         deleteMemo,
-        updateReflection
+        addAssessment,
+        updateAssessment,
+        deleteAssessment
     } = useBlocks(userId, formattedDate)
 
     const handleTitleChange = (blockId: string, title: string) => {
@@ -39,8 +42,7 @@ const DailyView = () => {
     }
 
     const handleReflectionChange = (blockId: string, reflection: string) => {
-        console.log('Reflection change called:', blockId, reflection)
-        updateReflection(blockId, reflection)
+        updateBlock(blockId, { reflection })
     }
 
     if (isLoading) return <div>로딩 중...</div>
@@ -110,9 +112,13 @@ const DailyView = () => {
 
             <MemoSection
                 memos={memos}
+                assessments={assessments}
                 onAddMemo={addMemo}
                 onUpdateMemo={updateMemo}
                 onDeleteMemo={deleteMemo}
+                onAddAssessment={addAssessment}
+                onUpdateAssessment={updateAssessment}
+                onDeleteAssessment={deleteAssessment}
             />
         </div>
     )

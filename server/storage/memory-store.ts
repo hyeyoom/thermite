@@ -1,4 +1,4 @@
-import {BlockType, Todo, Memo} from '@/lib/types'
+import {BlockType, Todo, Memo, Assessment} from '@/lib/types'
 import fs from 'fs'
 import path from 'path'
 
@@ -6,6 +6,7 @@ import path from 'path'
 class MemoryStore {
     private blocks: Map<string, BlockType[]> = new Map() // key: userId_date
     private memos: Map<string, Memo[]> = new Map()       // key: userId_date
+    private assessments: Map<string, Assessment[]> = new Map()  // key: userId_date
     private dataPath = path.join(process.cwd(), 'data', 'blocks.json')
 
     constructor() {
@@ -30,6 +31,11 @@ class MemoryStore {
                         this.memos.set(key, value as Memo[])
                     })
                 }
+                if (data.assessments) {
+                    Object.entries(data.assessments).forEach(([key, value]) => {
+                        this.assessments.set(key, value as Assessment[])
+                    })
+                }
             }
         } catch (e) {
             console.log('No saved data found')
@@ -40,7 +46,8 @@ class MemoryStore {
         try {
             const data = {
                 blocks: Object.fromEntries(this.blocks),
-                memos: Object.fromEntries(this.memos)
+                memos: Object.fromEntries(this.memos),
+                assessments: Object.fromEntries(this.assessments)
             }
             fs.writeFileSync(this.dataPath, JSON.stringify(data, null, 2))
         } catch (e) {
@@ -175,6 +182,43 @@ class MemoryStore {
     // Reflection은 Block의 일부이므로 updateBlock을 사용
     updateReflection(blockId: string, reflection: string): void {
         this.updateBlock(blockId, { reflection })
+    }
+
+    // Assessments
+    getAssessments(userId: string, date: string): Assessment[] {
+        const key = `${userId}_${date}`
+        return this.assessments.get(key) || []
+    }
+
+    addAssessment(userId: string, date: string, assessment: Assessment): void {
+        const key = `${userId}_${date}`
+        const assessments = this.getAssessments(userId, date)
+        this.assessments.set(key, [...assessments, assessment])
+        this.saveToStorage()
+    }
+
+    updateAssessment(assessmentId: string, content: string): void {
+        this.assessments.forEach((assessments, key) => {
+            const updatedAssessments = assessments.map(assessment =>
+                assessment.id === assessmentId
+                    ? { ...assessment, content }
+                    : assessment
+            )
+            this.assessments.set(key, updatedAssessments)
+        })
+        this.saveToStorage()
+    }
+
+    deleteAssessment(assessmentId: string): void {
+        this.assessments.forEach((assessments, key) => {
+            const updatedAssessments = assessments.filter(
+                assessment => assessment.id !== assessmentId
+            )
+            if (updatedAssessments.length !== assessments.length) {
+                this.assessments.set(key, updatedAssessments)
+            }
+        })
+        this.saveToStorage()
     }
 }
 

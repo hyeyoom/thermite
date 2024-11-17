@@ -49,9 +49,13 @@ export interface BlockProps {
 
 export interface MemoSectionProps {
     memos: Memo[]
+    assessments: Assessment[]
     onAddMemo: (content: string) => void
-    onUpdateMemo?: (id: string, content: string) => void
-    onDeleteMemo?: (id: string) => void
+    onUpdateMemo: (memoId: string, content: string) => void
+    onDeleteMemo: (memoId: string) => void
+    onAddAssessment: (type: 'good' | 'bad' | 'next', content: string) => void
+    onUpdateAssessment: (assessmentId: string, content: string) => void
+    onDeleteAssessment: (assessmentId: string) => void
 }
 
 export interface Assessment {

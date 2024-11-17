@@ -71,7 +71,7 @@ const Block = ({
     }
 
     const handleReflectionBlur = () => {
-        if (localReflection !== reflection) {
+        if (!isComposing && localReflection !== reflection) {
             onReflectionChange(localReflection)
         }
     }
@@ -211,7 +211,12 @@ const Block = ({
                             onChange={handleReflectionChange}
                             onBlur={handleReflectionBlur}
                             onCompositionStart={() => setIsComposing(true)}
-                            onCompositionEnd={() => setIsComposing(false)}
+                            onCompositionEnd={() => {
+                                setIsComposing(false)
+                                if (localReflection !== reflection) {
+                                    onReflectionChange(localReflection)
+                                }
+                            }}
                             className="w-full h-24 resize-none border-none focus:ring-0 hover:bg-muted/50 transition-colors"
                             placeholder="회고 메모..."
                         />

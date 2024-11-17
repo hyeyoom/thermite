@@ -1,4 +1,4 @@
-import { BlockType, Todo, Memo } from '@/lib/types'
+import { BlockType, Todo, Memo, Assessment } from '@/lib/types'
 import { memoryStore } from '../storage/memory-store'
 
 export class BlockService {
@@ -109,5 +109,28 @@ export class BlockService {
   // Reflection
   async updateReflection(blockId: string, reflection: string): Promise<void> {
     memoryStore.updateReflection(blockId, reflection)
+  }
+
+  // Assessments
+  async getAssessments(userId: string, date: string): Promise<Assessment[]> {
+    return memoryStore.getAssessments(userId, date)
+  }
+
+  async addAssessment(userId: string, date: string, type: 'good' | 'bad' | 'next', content: string): Promise<Assessment> {
+    const assessment: Assessment = {
+      id: Date.now().toString(),
+      type,
+      content
+    }
+    memoryStore.addAssessment(userId, date, assessment)
+    return assessment
+  }
+
+  async updateAssessment(assessmentId: string, content: string): Promise<void> {
+    memoryStore.updateAssessment(assessmentId, content)
+  }
+
+  async deleteAssessment(assessmentId: string): Promise<void> {
+    memoryStore.deleteAssessment(assessmentId)
   }
 }
