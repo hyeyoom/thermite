@@ -36,7 +36,7 @@ export function Navbar() {
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 border-b bg-background/80 backdrop-blur-sm">
-      <nav className="max-w-6xl mx-auto">
+      <nav className="max-w-6xl mx-auto px-4 md:px-8">
         <div className="flex h-14 items-center justify-between">
           <NavigationMenu>
             <NavigationMenuList>
@@ -70,13 +70,13 @@ export function Navbar() {
                           {user.email?.charAt(0).toUpperCase()}
                         </div>
                       )}
-                      <span>{user.user_metadata?.full_name || user.email}</span>
+                      <span className="hidden sm:inline">{user.user_metadata?.full_name || user.email}</span>
                     </NavigationMenuTrigger>
                     <NavigationMenuContent>
                       <ul className="w-48 p-2">
                         <li>
                           <Link href="/profile" legacyBehavior passHref>
-                            <NavigationMenuLink
+                            <NavigationMenuLink 
                               className={cn(
                                 "flex items-center gap-2 w-full p-2 rounded-md hover:bg-accent",
                                 "cursor-pointer"
@@ -89,7 +89,7 @@ export function Navbar() {
                         </li>
                         <li>
                           <Link href="/settings" legacyBehavior passHref>
-                            <NavigationMenuLink
+                            <NavigationMenuLink 
                               className={cn(
                                 "flex items-center gap-2 w-full p-2 rounded-md hover:bg-accent",
                                 "cursor-pointer"
@@ -102,7 +102,7 @@ export function Navbar() {
                         </li>
                         <li>
                           <form action="/auth/signout" method="post">
-                            <button
+                            <button 
                               className={cn(
                                 "flex items-center gap-2 w-full p-2 rounded-md hover:bg-accent",
                                 "text-red-500 hover:text-red-600"
@@ -126,7 +126,7 @@ export function Navbar() {
                   <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
                   <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
                 </svg>
-                Google로 로그인
+                <span className="hidden sm:inline">Google로 로그인</span>
               </Button>
             )}
           </div>
