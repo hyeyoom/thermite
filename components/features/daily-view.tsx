@@ -7,19 +7,23 @@ import {Button} from "@/components/ui/button"
 import {PlusCircle} from "lucide-react"
 import Block from "@/components/features/block";
 import MemoSection from "@/components/features/memo-section";
-import {BlockType, Memo} from "@/lib/types";
+import {BlockType, Memo, Todo} from "@/lib/types";
 
 const DailyView = () => {
     const today = new Date()
     const [blocks, setBlocks] = React.useState<BlockType[]>([
         {
             id: '1',
+            user_id: 'test-user',
+            date: today.toISOString().split('T')[0],
             number: 1,
             title: '',
             startTime: '',
             endTime: '',
             todos: [],
-            reflection: ''
+            reflection: '',
+            created_at: today.toISOString(),
+            updated_at: today.toISOString()
         }
     ])
     const [memos, setMemos] = React.useState<Memo[]>([])
@@ -33,12 +37,17 @@ const DailyView = () => {
     const handleAddTodo = (blockId: string, content: string) => {
         setBlocks(blocks.map(block => {
             if (block.id === blockId) {
+                const newTodo: Todo = {
+                    id: Date.now().toString(),
+                    block_id: blockId,
+                    content,
+                    isCompleted: false,
+                    created_at: new Date().toISOString(),
+                    updated_at: new Date().toISOString()
+                }
                 return {
                     ...block,
-                    todos: [
-                        ...block.todos,
-                        {id: Date.now().toString(), content, isCompleted: false}
-                    ]
+                    todos: [...block.todos, newTodo]
                 }
             }
             return block
@@ -60,7 +69,15 @@ const DailyView = () => {
     }
 
     const handleAddMemo = (content: string) => {
-        setMemos([...memos, {id: Date.now().toString(), content}])
+        const newMemo: Memo = {
+            id: Date.now().toString(),
+            user_id: 'test-user',
+            date: new Date().toISOString().split('T')[0],
+            content,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+        }
+        setMemos([...memos, newMemo])
     }
 
     const handleUpdateMemo = (id: string, content: string) => {
@@ -90,15 +107,20 @@ const DailyView = () => {
     const handleAddBlock = () => {
         if (blocks.length >= 6) return
 
-        const newBlock = {
+        const newBlock: BlockType = {
             id: Date.now().toString(),
+            user_id: 'test-user',
+            date: new Date().toISOString().split('T')[0],
             number: blocks.length + 1,
             title: '',
             startTime: '',
             endTime: '',
             todos: [],
-            reflection: ''
+            reflection: '',
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
         }
+        
         setBlocks([...blocks, newBlock])
     }
 
