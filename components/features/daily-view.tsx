@@ -5,8 +5,8 @@ import {format} from "date-fns"
 import {ko} from "date-fns/locale"
 import {Button} from "@/components/ui/button"
 import {PlusCircle} from "lucide-react"
-import Block from "@/app/components/block";
-import MemoSection from "@/app/components/memo-section";
+import Block from "@/components/features/block";
+import MemoSection from "@/components/features/memo-section";
 import {BlockType, Memo} from "@/lib/types";
 
 const DailyView = () => {

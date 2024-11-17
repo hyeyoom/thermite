@@ -1,4 +1,4 @@
-import DailyView from "./components/daily-view";
+import DailyView from "../components/features/daily-view";
 
 export default function Home() {
   return (
