@@ -1,4 +1,4 @@
-import { BlockType } from '@/lib/types'
+import { BlockType, Todo } from '@/lib/types'
 import { memoryStore } from '../storage/memory-store'
 
 export class BlockService {
@@ -10,7 +10,7 @@ export class BlockService {
     const newBlock: BlockType = {
       id: Date.now().toString(),
       user_id: userId,
-      date: new Date().toISOString().split('T')[0],
+      date: blockData.date || new Date().toISOString().split('T')[0],
       number: blockData.number || 1,
       title: blockData.title || '',
       startTime: blockData.startTime || '',
@@ -21,6 +21,7 @@ export class BlockService {
       updated_at: new Date().toISOString()
     }
 
+    console.log('Creating new block:', newBlock)
     memoryStore.addBlock(newBlock)
     return newBlock
   }
@@ -32,4 +33,49 @@ export class BlockService {
   async deleteBlock(blockId: string): Promise<void> {
     memoryStore.deleteBlock(blockId)
   }
-} 
+
+  async getTodos(blockId: string): Promise<Todo[]> {
+    const block = await this.getBlockById(blockId)
+    return block?.todos || []
+  }
+
+  async addTodo(blockId: string, todoData: Partial<Todo>): Promise<Todo> {
+    console.log("Block Id:", blockId)
+    const block = memoryStore.getBlockById(blockId)
+    
+    if (!block) {
+        throw new Error(`Block not found with id: ${blockId}`)
+    }
+
+    const newTodo: Todo = {
+        id: Date.now().toString(),
+        block_id: blockId,
+        content: todoData.content || '',
+        isCompleted: todoData.isCompleted || false,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+    }
+
+    const updatedTodos = [...block.todos, newTodo]
+    await this.updateBlock(blockId, { todos: updatedTodos })
+
+    return newTodo
+  }
+
+  async updateTodo(todoId: string, updates: Partial<Todo>): Promise<void> {
+    memoryStore.updateTodo(todoId, updates)
+  }
+
+  async deleteTodo(todoId: string): Promise<void> {
+    memoryStore.deleteTodo(todoId)
+  }
+
+  private async getAllBlocks(): Promise<BlockType[]> {
+    return memoryStore.getAllBlocks()
+  }
+
+  private async getBlockById(blockId: string): Promise<BlockType | undefined> {
+    const allBlocks = await this.getAllBlocks()
+    return allBlocks.find(block => block.id === blockId)
+  }
+}

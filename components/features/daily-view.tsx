@@ -11,6 +11,9 @@ import {Memo} from "@/lib/types";
 
 const DailyView = () => {
     const today = new Date()
+    const formattedDate = format(today, 'yyyy-MM-dd')
+    const userId = 'test-user'
+    
     const {
         blocks,
         isLoading,
@@ -21,7 +24,7 @@ const DailyView = () => {
         addTodo,
         toggleTodo,
         deleteTodo
-    } = useBlocks()
+    } = useBlocks(userId, formattedDate)
 
     const [memos, setMemos] = React.useState<Memo[]>([])
 
@@ -40,8 +43,8 @@ const DailyView = () => {
     const handleAddMemo = (content: string) => {
         const newMemo: Memo = {
             id: Date.now().toString(),
-            user_id: 'test-user',
-            date: new Date().toISOString().split('T')[0],
+            user_id: userId,
+            date: formattedDate,
             content,
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString()
