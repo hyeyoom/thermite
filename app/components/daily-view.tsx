@@ -7,7 +7,6 @@ import {Button} from "@/components/ui/button"
 import {PlusCircle} from "lucide-react"
 import Block from "@/app/components/block";
 import MemoSection from "@/app/components/memo-section";
-import {ThemeToggle} from "@/components/theme-toggle"
 import {BlockType, Memo} from "@/lib/types";
 
 const DailyView = () => {
@@ -130,14 +129,13 @@ const DailyView = () => {
         <div className="max-w-6xl mx-auto">
             <div className="flex justify-between items-center mb-6">
                 <div className="flex items-center gap-2">
-          <span className="font-bold text-lg">
-            {format(today, 'EEEE', {locale: ko})}
-          </span>
+                    <span className="font-bold text-lg">
+                        {format(today, 'EEEE', {locale: ko})}
+                    </span>
                     <span className="text-muted-foreground">
-            {format(today, 'yyyy.MM.dd')}
-          </span>
+                        {format(today, 'yyyy.MM.dd')}
+                    </span>
                 </div>
-                <ThemeToggle/>
             </div>
 
             <div className="space-y-4">
