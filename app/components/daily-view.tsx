@@ -164,14 +164,16 @@ const DailyView = () => {
         {blocks.map((block, index) => (
           <React.Fragment key={block.id}>
             {(index === 2 || index === 4) && (
-              <div className="relative py-2">
+              <div className="relative py-4">
                 <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-dashed border-gray-300" />
+                  <div className="w-full border-t-2 border-dashed border-primary/20" />
                 </div>
                 <div className="relative flex justify-center">
-                  <span className="bg-background px-2 text-sm text-muted-foreground">
-                    {index === 2 ? '점심 시간' : '저녁 시간'}
-                  </span>
+                  <div className="flex items-center gap-2 bg-background px-3 py-1.5 rounded-full border border-border">
+                    <span className="text-sm font-medium text-muted-foreground">
+                      {index === 2 ? '점심 시간' : '저녁 시간'}
+                    </span>
+                  </div>
                 </div>
               </div>
             )}
