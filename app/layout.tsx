@@ -16,7 +16,7 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-    title: "Daily Planner",
+    title: "Block 6",
     description: "Plan your day effectively",
 };
 
