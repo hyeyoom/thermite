@@ -1,6 +1,6 @@
 'use client'
 
-import React, {useEffect, useState, useCallback} from 'react'
+import React, {useCallback, useEffect, useState} from 'react'
 import {Card} from '@/components/ui/card'
 import {Checkbox} from '@/components/ui/checkbox'
 import {Button} from '@/components/ui/button'
@@ -9,7 +9,6 @@ import {Textarea} from '@/components/ui/textarea'
 import {Dialog, DialogContent, DialogHeader, DialogTitle,} from "@/components/ui/dialog"
 import {cn} from '@/lib/utils'
 import {BlockProps} from "@/lib/types";
-import { debounce } from 'lodash'
 
 const Block = ({
                    number,
@@ -67,17 +66,17 @@ const Block = ({
     }, [reflection])
 
     const debouncedReflectionChange = useCallback(
-        debounce((value: string) => {
+        (value: string) => {
             onReflectionChange(value)
-        }, 300),
+        },
         [onReflectionChange]
     )
 
-    const handleReflectionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const handleReflectionChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
         const newValue = e.target.value
         setLocalReflection(newValue)
         debouncedReflectionChange(newValue)
-    }
+    }, [debouncedReflectionChange])
 
     return (
         <>

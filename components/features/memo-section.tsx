@@ -1,10 +1,9 @@
 'use client'
 
-import React, {useState, useCallback} from 'react'
+import React, {useCallback, useState} from 'react'
 import {Button} from "@/components/ui/button"
 import {PlusCircle, X} from "lucide-react"
-import {Memo, MemoSectionProps} from "@/lib/types";
-import {debounce} from 'lodash'
+import {MemoSectionProps} from "@/lib/types";
 import {Input} from "@/components/ui/input"
 
 const MemoSection = ({
@@ -43,16 +42,16 @@ const MemoSection = ({
     };
 
     const debouncedUpdateMemo = useCallback(
-        debounce((memoId: string, content: string) => {
+        (memoId: string, content: string) => {
             onUpdateMemo(memoId, content);
-        }, 300),
+        },
         [onUpdateMemo]
     );
 
     const debouncedUpdateAssessment = useCallback(
-        debounce((assessmentId: string, content: string) => {
+        (assessmentId: string, content: string) => {
             onUpdateAssessment(assessmentId, content);
-        }, 300),
+        },
         [onUpdateAssessment]
     );
 
