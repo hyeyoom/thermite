@@ -4,6 +4,7 @@ import Link from "next/link"
 import Image from "next/image"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { Button } from "@/components/ui/button"
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { cn } from "@/lib/utils"
 import { LogOut, Settings, User } from "lucide-react"
 import {
@@ -25,7 +26,6 @@ type MockUser = {
 }
 
 export function Navbar() {
-  // TODO: Supabase에서 사용자 정보 가져오기
   const user: MockUser | null = {
     email: "test@example.com",
     user_metadata: {
@@ -33,7 +33,7 @@ export function Navbar() {
       full_name: "테스트 사용자"
     }
   }
-
+  
   return (
     <header className="fixed top-0 left-0 right-0 z-50 border-b bg-background/80 backdrop-blur-sm">
       <nav className="max-w-6xl mx-auto px-4 md:px-8">
@@ -53,71 +53,118 @@ export function Navbar() {
           <div className="flex items-center gap-4">
             <ThemeToggle />
             {user ? (
-              <NavigationMenu>
-                <NavigationMenuList>
-                  <NavigationMenuItem>
-                    <NavigationMenuTrigger className="flex items-center gap-2">
-                      {user.user_metadata?.avatar_url ? (
-                        <Image
-                          src={user.user_metadata.avatar_url}
-                          alt="User avatar"
-                          width={32}
-                          height={32}
-                          className="rounded-full"
-                        />
-                      ) : (
-                        <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center">
+              <>
+                {/* 데스크톱 메뉴 */}
+                <NavigationMenu className="hidden sm:flex">
+                  <NavigationMenuList>
+                    <NavigationMenuItem>
+                      <NavigationMenuTrigger className="flex items-center gap-2">
+                        {user.user_metadata?.avatar_url ? (
+                          <Image
+                            src={user.user_metadata.avatar_url}
+                            alt="User avatar"
+                            width={32}
+                            height={32}
+                            className="rounded-full"
+                          />
+                        ) : (
+                          <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center">
+                            {user.email?.charAt(0).toUpperCase()}
+                          </div>
+                        )}
+                        <span>{user.user_metadata?.full_name || user.email}</span>
+                      </NavigationMenuTrigger>
+                      <NavigationMenuContent>
+                        <ul className="w-48 p-2">
+                          <li>
+                            <Link href="/profile" legacyBehavior passHref>
+                              <NavigationMenuLink 
+                                className={cn(
+                                  "flex items-center gap-2 w-full p-2 rounded-md hover:bg-accent",
+                                  "cursor-pointer"
+                                )}
+                              >
+                                <User className="w-4 h-4" />
+                                <span>프로필</span>
+                              </NavigationMenuLink>
+                            </Link>
+                          </li>
+                          <li>
+                            <Link href="/settings" legacyBehavior passHref>
+                              <NavigationMenuLink 
+                                className={cn(
+                                  "flex items-center gap-2 w-full p-2 rounded-md hover:bg-accent",
+                                  "cursor-pointer"
+                                )}
+                              >
+                                <Settings className="w-4 h-4" />
+                                <span>설정</span>
+                              </NavigationMenuLink>
+                            </Link>
+                          </li>
+                          <li>
+                            <form action="/auth/signout" method="post">
+                              <button 
+                                className={cn(
+                                  "flex items-center gap-2 w-full p-2 rounded-md hover:bg-accent",
+                                  "text-red-500 hover:text-red-600"
+                                )}
+                              >
+                                <LogOut className="w-4 h-4" />
+                                <span>로그아웃</span>
+                              </button>
+                            </form>
+                          </li>
+                        </ul>
+                      </NavigationMenuContent>
+                    </NavigationMenuItem>
+                  </NavigationMenuList>
+                </NavigationMenu>
+
+                {/* 모바일 메뉴 */}
+                <Sheet>
+                  <SheetTrigger asChild className="sm:hidden">
+                    <Button variant="ghost" size="icon" className="rounded-full">
+                      <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center">
+                        {user.email?.charAt(0).toUpperCase()}
+                      </div>
+                    </Button>
+                  </SheetTrigger>
+                  <SheetContent side="bottom" className="h-[40vh]">
+                    <div className="flex flex-col gap-4 pt-4">
+                      <div className="flex items-center gap-3 px-2">
+                        <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center text-lg">
                           {user.email?.charAt(0).toUpperCase()}
                         </div>
-                      )}
-                      <span className="hidden sm:inline">{user.user_metadata?.full_name || user.email}</span>
-                    </NavigationMenuTrigger>
-                    <NavigationMenuContent>
-                      <ul className="w-48 p-2">
-                        <li>
-                          <Link href="/profile" legacyBehavior passHref>
-                            <NavigationMenuLink 
-                              className={cn(
-                                "flex items-center gap-2 w-full p-2 rounded-md hover:bg-accent",
-                                "cursor-pointer"
-                              )}
-                            >
-                              <User className="w-4 h-4" />
-                              <span>프로필</span>
-                            </NavigationMenuLink>
-                          </Link>
-                        </li>
-                        <li>
-                          <Link href="/settings" legacyBehavior passHref>
-                            <NavigationMenuLink 
-                              className={cn(
-                                "flex items-center gap-2 w-full p-2 rounded-md hover:bg-accent",
-                                "cursor-pointer"
-                              )}
-                            >
-                              <Settings className="w-4 h-4" />
-                              <span>설정</span>
-                            </NavigationMenuLink>
-                          </Link>
-                        </li>
-                        <li>
-                          <form action="/auth/signout" method="post">
-                            <button 
-                              className={cn(
-                                "flex items-center gap-2 w-full p-2 rounded-md hover:bg-accent",
-                                "text-red-500 hover:text-red-600"
-                              )}
-                            >
-                              <LogOut className="w-4 h-4" />
-                              <span>로그아웃</span>
-                            </button>
-                          </form>
-                        </li>
-                      </ul>
-                    </NavigationMenuContent>
-                  </NavigationMenuItem>
-                </NavigationMenuList>
-              </NavigationMenu>
+                        <div className="flex flex-col">
+                          <span className="font-medium">{user.user_metadata?.full_name}</span>
+                          <span className="text-sm text-muted-foreground">{user.email}</span>
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        <Link href="/profile">
+                          <Button variant="ghost" className="w-full justify-start gap-3">
+                            <User className="w-4 h-4" />
+                            프로필
+                          </Button>
+                        </Link>
+                        <Link href="/settings">
+                          <Button variant="ghost" className="w-full justify-start gap-3">
+                            <Settings className="w-4 h-4" />
+                            설정
+                          </Button>
+                        </Link>
+                        <form action="/auth/signout" method="post">
+                          <Button variant="ghost" className="w-full justify-start gap-3 text-red-500 hover:text-red-600">
+                            <LogOut className="w-4 h-4" />
+                            로그아웃
+                          </Button>
+                        </form>
+                      </div>
+                    </div>
+                  </SheetContent>
+                </Sheet>
+              </>
             ) : (
               <Button variant="outline" size="sm" className="gap-2">
                 <svg className="w-4 h-4" viewBox="0 0 24 24">
