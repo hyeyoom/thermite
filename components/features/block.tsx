@@ -1,6 +1,6 @@
 'use client'
 
-import React, {useEffect, useState} from 'react'
+import React, {useEffect, useState, useCallback} from 'react'
 import {Card} from '@/components/ui/card'
 import {Checkbox} from '@/components/ui/checkbox'
 import {Button} from '@/components/ui/button'
@@ -9,6 +9,7 @@ import {Textarea} from '@/components/ui/textarea'
 import {Dialog, DialogContent, DialogHeader, DialogTitle,} from "@/components/ui/dialog"
 import {cn} from '@/lib/utils'
 import {BlockProps} from "@/lib/types";
+import { debounce } from 'lodash'
 
 const Block = ({
                    number,
@@ -34,7 +35,6 @@ const Block = ({
     const [isEditingTitle, setIsEditingTitle] = React.useState(false)
     const [localTitle, setLocalTitle] = React.useState(title)
     const [localReflection, setLocalReflection] = useState(reflection || '')
-    const [isComposing, setIsComposing] = useState(false)
 
     const handleAddTodo = () => {
         if (newTodoContent.trim()) {
@@ -66,14 +66,17 @@ const Block = ({
         setLocalReflection(reflection || '')
     }, [reflection])
 
-    const handleReflectionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-        setLocalReflection(e.target.value)
-    }
+    const debouncedReflectionChange = useCallback(
+        debounce((value: string) => {
+            onReflectionChange(value)
+        }, 300),
+        [onReflectionChange]
+    )
 
-    const handleReflectionBlur = () => {
-        if (!isComposing && localReflection !== reflection) {
-            onReflectionChange(localReflection)
-        }
+    const handleReflectionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+        const newValue = e.target.value
+        setLocalReflection(newValue)
+        debouncedReflectionChange(newValue)
     }
 
     return (
@@ -209,14 +212,6 @@ const Block = ({
                         <Textarea
                             value={localReflection}
                             onChange={handleReflectionChange}
-                            onBlur={handleReflectionBlur}
-                            onCompositionStart={() => setIsComposing(true)}
-                            onCompositionEnd={() => {
-                                setIsComposing(false)
-                                if (localReflection !== reflection) {
-                                    onReflectionChange(localReflection)
-                                }
-                            }}
                             className="w-full h-24 resize-none border-none focus:ring-0 hover:bg-muted/50 transition-colors"
                             placeholder="회고 메모..."
                         />

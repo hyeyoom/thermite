@@ -1,6 +1,6 @@
 'use client'
 
-import React, {useState} from 'react'
+import React, {useState, useCallback} from 'react'
 import {Button} from "@/components/ui/button"
 import {PlusCircle, X} from "lucide-react"
 import {Memo, MemoSectionProps} from "@/lib/types";
@@ -11,36 +11,50 @@ const MemoSection = ({
                          memos,
                          assessments = [],
                          onAddMemo,
-                         onUpdateMemo = () => {},
-                         onDeleteMemo = () => {},
-                         onAddAssessment = () => {},
-                         onUpdateAssessment = () => {},
-                         onDeleteAssessment = () => {},
+                         onUpdateMemo,
+                         onDeleteMemo,
+                         onAddAssessment,
+                         onUpdateAssessment,
+                         onDeleteAssessment,
                      }: MemoSectionProps) => {
-    const [isAddingMemo, setIsAddingMemo] = useState(false)
-    const [newMemoContent, setNewMemoContent] = useState('')
-    const [isAddingEvaluation, setIsAddingEvaluation] = useState<'good' | 'bad' | 'next' | null>(null)
-    const [newEvaluationContent, setNewEvaluationContent] = useState('')
+    const [editState, setEditState] = useState<{
+        type: 'memo' | 'assessment' | null;
+        content: string;
+        assessmentType?: 'good' | 'bad' | 'next';
+    }>({
+        type: null,
+        content: ''
+    });
 
-    const handleAddMemo = () => {
-        if (newMemoContent.trim()) {
-            onAddMemo(newMemoContent.trim())
-            setNewMemoContent('')
-            setIsAddingMemo(false)
+    const resetEditState = () => {
+        setEditState({ type: null, content: '' });
+    };
+
+    const handleAddItem = () => {
+        const { type, content, assessmentType } = editState;
+        if (!content.trim()) return;
+
+        if (type === 'memo') {
+            onAddMemo(content.trim());
+        } else if (type === 'assessment' && assessmentType) {
+            onAddAssessment(assessmentType, content.trim());
         }
-    }
+        resetEditState();
+    };
 
-    const handleMemoEdit = debounce((memo: Memo, content: string) => {
-        onUpdateMemo(memo.id, content)
-    }, 500)
+    const debouncedUpdateMemo = useCallback(
+        debounce((memoId: string, content: string) => {
+            onUpdateMemo(memoId, content);
+        }, 300),
+        [onUpdateMemo]
+    );
 
-    const handleAddEvaluation = () => {
-        if (isAddingEvaluation && newEvaluationContent.trim()) {
-            onAddAssessment(isAddingEvaluation, newEvaluationContent.trim())
-            setNewEvaluationContent('')
-            setIsAddingEvaluation(null)
-        }
-    }
+    const debouncedUpdateAssessment = useCallback(
+        debounce((assessmentId: string, content: string) => {
+            onUpdateAssessment(assessmentId, content);
+        }, 300),
+        [onUpdateAssessment]
+    );
 
     return (
         <div className="rounded-lg border bg-card text-card-foreground shadow-sm p-6">
@@ -52,39 +66,25 @@ const MemoSection = ({
                         <Button
                             variant="ghost"
                             size="sm"
-                            onClick={() => setIsAddingMemo(true)}
+                            onClick={() => setEditState({ type: 'memo', content: '' })}
                         >
                             <PlusCircle className="h-4 w-4"/>
                         </Button>
                     </div>
 
-                    {isAddingMemo && (
-                        <div className="flex items-center gap-2">
-                            <Input
-                                value={newMemoContent}
-                                onChange={(e) => setNewMemoContent(e.target.value)}
-                                onKeyDown={(e) => {
-                                    if (e.key === 'Enter' && !e.shiftKey) {
-                                        e.preventDefault()
-                                        handleAddMemo()
-                                    }
-                                }}
-                                placeholder="새 메모..."
-                                className="flex-1"
-                                autoFocus
-                            />
-                            <Button size="sm" onClick={handleAddMemo}>추가</Button>
-                            <Button
-                                size="sm"
-                                variant="ghost"
-                                onClick={() => {
-                                    setIsAddingMemo(false)
-                                    setNewMemoContent('')
-                                }}
-                            >
-                                취소
-                            </Button>
-                        </div>
+                    {editState.type === 'memo' && (
+                        <Input
+                            value={editState.content}
+                            onChange={(e) => setEditState(prev => ({ ...prev, content: e.target.value }))}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter' && !e.shiftKey) {
+                                    e.preventDefault();
+                                    handleAddItem();
+                                }
+                            }}
+                            placeholder="새 메모..."
+                            autoFocus
+                        />
                     )}
 
                     <ul className="space-y-2">
@@ -92,9 +92,9 @@ const MemoSection = ({
                             <li key={memo.id} className="group flex items-center gap-2 border-b-2 border-muted">
                                 <input
                                     type="text"
-                                    value={memo.content}
-                                    onChange={(e) => handleMemoEdit(memo, e.target.value)}
-                                    className="flex-1 text-sm bg-transparent border-none focus:outline-none focus:ring-0 px-2 py-1"
+                                    defaultValue={memo.content}
+                                    onChange={(e) => debouncedUpdateMemo(memo.id, e.target.value)}
+                                    className="flex-1 text-sm bg-transparent border-none focus:outline-none focus:ring-0"
                                 />
                                 <Button
                                     variant="ghost"
@@ -122,35 +122,31 @@ const MemoSection = ({
                                     <Button
                                         variant="ghost"
                                         size="sm"
-                                        onClick={() => setIsAddingEvaluation(type as 'good' | 'bad' | 'next')}
+                                        onClick={() => setEditState({ type: 'assessment', content: '', assessmentType: type as 'good' | 'bad' | 'next' })}
                                     >
                                         <PlusCircle className="h-4 w-4"/>
                                     </Button>
                                 </div>
 
-                                {isAddingEvaluation === type && (
+                                {editState.type === 'assessment' && editState.assessmentType === type && (
                                     <div className="flex items-center gap-2">
                                         <Input
-                                            value={newEvaluationContent}
-                                            onChange={(e) => setNewEvaluationContent(e.target.value)}
+                                            value={editState.content}
+                                            onChange={(e) => setEditState(prev => ({ ...prev, content: e.target.value }))}
                                             onKeyDown={(e) => {
                                                 if (e.key === 'Enter' && !e.shiftKey) {
-                                                    e.preventDefault()
-                                                    handleAddEvaluation()
+                                                    e.preventDefault();
+                                                    handleAddItem();
                                                 }
                                             }}
                                             placeholder="새로운 항목 추가..."
-                                            className="flex-1"
                                             autoFocus
                                         />
-                                        <Button size="sm" onClick={handleAddEvaluation}>추가</Button>
+                                        <Button size="sm" onClick={handleAddItem}>추가</Button>
                                         <Button
                                             size="sm"
                                             variant="ghost"
-                                            onClick={() => {
-                                                setIsAddingEvaluation(null)
-                                                setNewEvaluationContent('')
-                                            }}
+                                            onClick={resetEditState}
                                         >
                                             취소
                                         </Button>
@@ -164,9 +160,9 @@ const MemoSection = ({
                                             <li key={assessment.id} className="group flex items-center gap-2 border-b-2 border-muted">
                                                 <input
                                                     type="text"
-                                                    value={assessment.content}
-                                                    onChange={(e) => onUpdateAssessment(assessment.id, e.target.value)}
-                                                    className="flex-1 text-sm bg-transparent border-none focus:outline-none focus:ring-0 px-2 py-1"
+                                                    defaultValue={assessment.content}
+                                                    onChange={(e) => debouncedUpdateAssessment(assessment.id, e.target.value)}
+                                                    className="flex-1 text-sm bg-transparent border-none focus:outline-none focus:ring-0"
                                                 />
                                                 <Button
                                                     variant="ghost"
