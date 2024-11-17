@@ -2,70 +2,39 @@
 
 import React from 'react'
 import {format} from "date-fns"
-import {ko} from "date-fns/locale"
 import {Button} from "@/components/ui/button"
 import {PlusCircle} from "lucide-react"
 import Block from "@/components/features/block";
 import MemoSection from "@/components/features/memo-section";
-import {BlockType, Memo, Todo} from "@/lib/types";
+import {useBlocks} from "@/lib/hooks/useBlocks";
+import {Memo} from "@/lib/types";
 
 const DailyView = () => {
     const today = new Date()
-    const [blocks, setBlocks] = React.useState<BlockType[]>([
-        {
-            id: '1',
-            user_id: 'test-user',
-            date: today.toISOString().split('T')[0],
-            number: 1,
-            title: '',
-            startTime: '',
-            endTime: '',
-            todos: [],
-            reflection: '',
-            created_at: today.toISOString(),
-            updated_at: today.toISOString()
-        }
-    ])
+    const {
+        blocks,
+        isLoading,
+        error,
+        addBlock,
+        updateBlock,
+        deleteBlock,
+        addTodo,
+        toggleTodo,
+        deleteTodo
+    } = useBlocks()
+
     const [memos, setMemos] = React.useState<Memo[]>([])
 
     const handleTitleChange = (blockId: string, title: string) => {
-        setBlocks(blocks.map(block =>
-            block.id === blockId ? {...block, title} : block
-        ))
+        updateBlock(blockId, { title })
     }
 
-    const handleAddTodo = (blockId: string, content: string) => {
-        setBlocks(blocks.map(block => {
-            if (block.id === blockId) {
-                const newTodo: Todo = {
-                    id: Date.now().toString(),
-                    block_id: blockId,
-                    content,
-                    isCompleted: false,
-                    created_at: new Date().toISOString(),
-                    updated_at: new Date().toISOString()
-                }
-                return {
-                    ...block,
-                    todos: [...block.todos, newTodo]
-                }
-            }
-            return block
-        }))
+    const handleTimeChange = (blockId: string, start: string, end: string) => {
+        updateBlock(blockId, { startTime: start, endTime: end })
     }
 
-    const handleToggleTodo = (blockId: string, todoId: string) => {
-        setBlocks(blocks.map(block => {
-            if (block.id === blockId) {
-                return {
-                    ...block,
-                    todos: block.todos.map(todo =>
-                        todo.id === todoId ? {...todo, isCompleted: !todo.isCompleted} : todo
-                    )
-                }
-            }
-            return block
-        }))
+    const handleReflectionChange = (blockId: string, reflection: string) => {
+        updateBlock(blockId, { reflection })
     }
 
     const handleAddMemo = (content: string) => {
@@ -82,7 +51,7 @@ const DailyView = () => {
 
     const handleUpdateMemo = (id: string, content: string) => {
         setMemos(memos.map(memo =>
-            memo.id === id ? {...memo, content} : memo
+            memo.id === id ? { ...memo, content } : memo
         ))
     }
 
@@ -90,71 +59,14 @@ const DailyView = () => {
         setMemos(memos.filter(memo => memo.id !== id))
     }
 
-    const handleReflectionChange = (blockId: string, reflection: string) => {
-        setBlocks(blocks.map(block =>
-            block.id === blockId ? {...block, reflection} : block
-        ))
-    }
-
-    const handleTimeChange = (blockId: string, start: string, end: string) => {
-        setBlocks(blocks.map(block =>
-            block.id === blockId
-                ? {...block, startTime: start, endTime: end}
-                : block
-        ))
-    }
-
-    const handleAddBlock = () => {
-        if (blocks.length >= 6) return
-
-        const newBlock: BlockType = {
-            id: Date.now().toString(),
-            user_id: 'test-user',
-            date: new Date().toISOString().split('T')[0],
-            number: blocks.length + 1,
-            title: '',
-            startTime: '',
-            endTime: '',
-            todos: [],
-            reflection: '',
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString()
-        }
-        
-        setBlocks([...blocks, newBlock])
-    }
-
-    const handleDeleteBlock = (blockId: string) => {
-        setBlocks(blocks.filter(block => block.id !== blockId))
-        // 블록 번호 재정렬
-        setBlocks(prevBlocks =>
-            prevBlocks.map((block, index) => ({
-                ...block,
-                number: index + 1
-            }))
-        )
-    }
-
-    const handleDeleteTodo = (blockId: string, todoId: string) => {
-        setBlocks(blocks.map(block => {
-            if (block.id === blockId) {
-                return {
-                    ...block,
-                    todos: block.todos.filter(todo => todo.id !== todoId)
-                }
-            }
-            return block
-        }))
-    }
+    if (isLoading) return <div>로딩 중...</div>
+    if (error) return <div>에러가 발생했습니다: {error.message}</div>
 
     return (
-        <div className="max-w-6xl mx-auto">
-            <div className="flex justify-between items-center mb-6">
+        <div className="max-w-6xl mx-auto space-y-8">
+            <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                    <span className="font-bold text-lg">
-                        {format(today, 'EEEE', {locale: ko})}
-                    </span>
-                    <span className="text-muted-foreground">
+                    <span className="text-lg font-medium">
                         {format(today, 'yyyy.MM.dd')}
                     </span>
                 </div>
@@ -169,11 +81,10 @@ const DailyView = () => {
                                     <div className="w-full border-t-2 border-dashed border-primary/20"/>
                                 </div>
                                 <div className="relative flex justify-center">
-                                    <div
-                                        className="flex items-center gap-2 bg-background px-3 py-1.5 rounded-full border border-border">
-                    <span className="text-sm font-medium text-muted-foreground">
-                      {index === 2 ? '점심 시간' : '저녁 시간'}
-                    </span>
+                                    <div className="flex items-center gap-2 bg-background px-3 py-1.5 rounded-full border border-border">
+                                        <span className="text-sm font-medium text-muted-foreground">
+                                            {index === 2 ? '점심 시간' : '저녁 시간'}
+                                        </span>
                                     </div>
                                 </div>
                             </div>
@@ -188,11 +99,11 @@ const DailyView = () => {
                             isLastBlock={blocks.length === 1}
                             onTitleChange={(value) => handleTitleChange(block.id, value)}
                             onTimeChange={(start, end) => handleTimeChange(block.id, start, end)}
-                            onAddTodo={(content) => handleAddTodo(block.id, content)}
-                            onToggleTodo={(todoId) => handleToggleTodo(block.id, todoId)}
+                            onAddTodo={(content) => addTodo(block.id, content)}
+                            onToggleTodo={(todoId) => toggleTodo(block.id, todoId)}
                             onReflectionChange={(value) => handleReflectionChange(block.id, value)}
-                            onDeleteTodo={(todoId) => handleDeleteTodo(block.id, todoId)}
-                            onDeleteBlock={() => handleDeleteBlock(block.id)}
+                            onDeleteTodo={(todoId) => deleteTodo(block.id, todoId)}
+                            onDeleteBlock={() => deleteBlock(block.id)}
                         />
                     </React.Fragment>
                 ))}
@@ -201,7 +112,7 @@ const DailyView = () => {
                     <Button
                         variant="outline"
                         className="w-full"
-                        onClick={handleAddBlock}
+                        onClick={addBlock}
                     >
                         <PlusCircle className="h-4 w-4 mr-2"/>
                         블록 추가 ({blocks.length}/6)
@@ -209,14 +120,12 @@ const DailyView = () => {
                 )}
             </div>
 
-            <div className="mt-8">
-                <MemoSection
-                    memos={memos}
-                    onAddMemo={handleAddMemo}
-                    onUpdateMemo={handleUpdateMemo}
-                    onDeleteMemo={handleDeleteMemo}
-                />
-            </div>
+            <MemoSection
+                memos={memos}
+                onAddMemo={handleAddMemo}
+                onUpdateMemo={handleUpdateMemo}
+                onDeleteMemo={handleDeleteMemo}
+            />
         </div>
     )
 }

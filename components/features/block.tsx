@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react'
+import React, {useEffect} from 'react'
 import {Card} from '@/components/ui/card'
 import {Checkbox} from '@/components/ui/checkbox'
 import {Button} from '@/components/ui/button'
@@ -32,6 +32,7 @@ const Block = ({
     const [tempStartTime, setTempStartTime] = React.useState(startTime)
     const [tempEndTime, setTempEndTime] = React.useState(endTime)
     const [isEditingTitle, setIsEditingTitle] = React.useState(false)
+    const [localTitle, setLocalTitle] = React.useState(title)
 
     const handleAddTodo = () => {
         if (newTodoContent.trim()) {
@@ -46,13 +47,18 @@ const Block = ({
         setIsTimeDialogOpen(false)
     }
 
-    const handleTitleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-        if (e.key === 'Enter') {
-            e.preventDefault()
-            e.currentTarget.blur()
-            setIsEditingTitle(false)
-        }
+    const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setLocalTitle(e.target.value)
     }
+
+    const handleTitleBlur = () => {
+        onTitleChange(localTitle)
+        setIsEditingTitle(false)
+    }
+
+    useEffect(() => {
+        setLocalTitle(title)
+    }, [title])
 
     return (
         <>
@@ -76,26 +82,34 @@ const Block = ({
                     </button>
 
                     {/* 제목 */}
-                    <div className="flex-none lg:w-48">
-                        {isEditingTitle ? (
-                            <input
-                                type="text"
-                                value={title}
-                                onChange={(e) => onTitleChange(e.target.value)}
-                                onKeyDown={handleTitleKeyDown}
-                                onBlur={() => setIsEditingTitle(false)}
-                                className="w-full text-lg font-semibold bg-transparent border-none focus:outline-none focus:ring-1 focus:ring-ring px-2"
-                                placeholder="블록 제목"
-                                autoFocus
-                            />
-                        ) : (
-                            <button
-                                onClick={() => setIsEditingTitle(true)}
-                                className="w-full text-left text-lg font-semibold px-2 hover:bg-muted/50 rounded truncate"
-                            >
-                                {title || "블록 제목"}
-                            </button>
-                        )}
+                    <div className="flex items-center gap-4">
+                        {/* 제목 - 너비 제한 추가 */}
+                        <div className="flex-none w-48">
+                            {isEditingTitle ? (
+                                <input
+                                    type="text"
+                                    value={localTitle}
+                                    onChange={handleTitleChange}
+                                    onBlur={handleTitleBlur}
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter' && !e.nativeEvent.isComposing) {
+                                            e.preventDefault()
+                                            e.currentTarget.blur()
+                                        }
+                                    }}
+                                    className="w-full bg-transparent border-none focus:outline-none focus:ring-0 font-medium px-0"
+                                    autoFocus
+                                    placeholder="제목 없음"
+                                />
+                            ) : (
+                                <button
+                                    onClick={() => setIsEditingTitle(true)}
+                                    className="w-full text-left font-medium hover:text-primary truncate"
+                                >
+                                    {title || '제목 없음'}
+                                </button>
+                            )}
+                        </div>
                     </div>
 
                     {/* Todo 리스트 */}
