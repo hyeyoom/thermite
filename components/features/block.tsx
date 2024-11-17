@@ -1,6 +1,6 @@
 'use client'
 
-import React, {useEffect} from 'react'
+import React, {useEffect, useState} from 'react'
 import {Card} from '@/components/ui/card'
 import {Checkbox} from '@/components/ui/checkbox'
 import {Button} from '@/components/ui/button'
@@ -33,6 +33,8 @@ const Block = ({
     const [tempEndTime, setTempEndTime] = React.useState(endTime)
     const [isEditingTitle, setIsEditingTitle] = React.useState(false)
     const [localTitle, setLocalTitle] = React.useState(title)
+    const [localReflection, setLocalReflection] = useState(reflection || '')
+    const [isComposing, setIsComposing] = useState(false)
 
     const handleAddTodo = () => {
         if (newTodoContent.trim()) {
@@ -59,6 +61,20 @@ const Block = ({
     useEffect(() => {
         setLocalTitle(title)
     }, [title])
+
+    useEffect(() => {
+        setLocalReflection(reflection || '')
+    }, [reflection])
+
+    const handleReflectionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+        setLocalReflection(e.target.value)
+    }
+
+    const handleReflectionBlur = () => {
+        if (localReflection !== reflection) {
+            onReflectionChange(localReflection)
+        }
+    }
 
     return (
         <>
@@ -191,8 +207,11 @@ const Block = ({
                     {/* 회고 메모 */}
                     <div className="flex-none lg:w-64">
                         <Textarea
-                            value={reflection}
-                            onChange={(e) => onReflectionChange(e.target.value)}
+                            value={localReflection}
+                            onChange={handleReflectionChange}
+                            onBlur={handleReflectionBlur}
+                            onCompositionStart={() => setIsComposing(true)}
+                            onCompositionEnd={() => setIsComposing(false)}
                             className="w-full h-24 resize-none border-none focus:ring-0 hover:bg-muted/50 transition-colors"
                             placeholder="회고 메모..."
                         />

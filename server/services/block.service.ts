@@ -1,4 +1,4 @@
-import { BlockType, Todo } from '@/lib/types'
+import { BlockType, Todo, Memo } from '@/lib/types'
 import { memoryStore } from '../storage/memory-store'
 
 export class BlockService {
@@ -77,5 +77,37 @@ export class BlockService {
   private async getBlockById(blockId: string): Promise<BlockType | undefined> {
     const allBlocks = await this.getAllBlocks()
     return allBlocks.find(block => block.id === blockId)
+  }
+
+  // Memos
+  async getMemos(userId: string, date: string): Promise<Memo[]> {
+    return memoryStore.getMemos(userId, date)
+  }
+
+  async createMemo(userId: string, memoData: Partial<Memo>): Promise<Memo> {
+    const newMemo: Memo = {
+      id: Date.now().toString(),
+      user_id: userId,
+      date: memoData.date || new Date().toISOString().split('T')[0],
+      content: memoData.content || '',
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    }
+
+    memoryStore.addMemo(newMemo)
+    return newMemo
+  }
+
+  async updateMemo(memoId: string, updates: Partial<Memo>): Promise<void> {
+    memoryStore.updateMemo(memoId, updates)
+  }
+
+  async deleteMemo(memoId: string): Promise<void> {
+    memoryStore.deleteMemo(memoId)
+  }
+
+  // Reflection
+  async updateReflection(blockId: string, reflection: string): Promise<void> {
+    memoryStore.updateReflection(blockId, reflection)
   }
 }

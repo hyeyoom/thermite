@@ -20,9 +20,16 @@ class MemoryStore {
             
             if (fs.existsSync(this.dataPath)) {
                 const data = JSON.parse(fs.readFileSync(this.dataPath, 'utf-8'))
-                Object.entries(data).forEach(([key, value]) => {
-                    this.blocks.set(key, value as BlockType[])
-                })
+                if (data.blocks) {
+                    Object.entries(data.blocks).forEach(([key, value]) => {
+                        this.blocks.set(key, value as BlockType[])
+                    })
+                }
+                if (data.memos) {
+                    Object.entries(data.memos).forEach(([key, value]) => {
+                        this.memos.set(key, value as Memo[])
+                    })
+                }
             }
         } catch (e) {
             console.log('No saved data found')
@@ -31,10 +38,10 @@ class MemoryStore {
 
     private saveToStorage() {
         try {
-            const data: Record<string, BlockType[]> = {}
-            this.blocks.forEach((value, key) => {
-                data[key] = value
-            })
+            const data = {
+                blocks: Object.fromEntries(this.blocks),
+                memos: Object.fromEntries(this.memos)
+            }
             fs.writeFileSync(this.dataPath, JSON.stringify(data, null, 2))
         } catch (e) {
             console.error('Failed to save data:', e)
@@ -128,6 +135,46 @@ class MemoryStore {
     getTodos(blockId: string): Todo[] {
         const block = this.getBlockById(blockId)
         return block?.todos || []
+    }
+
+    // Memos
+    getMemos(userId: string, date: string): Memo[] {
+        const key = `${userId}_${date}`
+        return this.memos.get(key) || []
+    }
+
+    addMemo(memo: Memo): void {
+        const key = `${memo.user_id}_${memo.date}`
+        const memos = this.getMemos(memo.user_id, memo.date)
+        this.memos.set(key, [...memos, memo])
+        this.saveToStorage()
+    }
+
+    updateMemo(memoId: string, updates: Partial<Memo>): void {
+        this.memos.forEach((memos, key) => {
+            const updatedMemos = memos.map(memo =>
+                memo.id === memoId
+                    ? { ...memo, ...updates, updated_at: new Date().toISOString() }
+                    : memo
+            )
+            this.memos.set(key, updatedMemos)
+        })
+        this.saveToStorage()
+    }
+
+    deleteMemo(memoId: string): void {
+        this.memos.forEach((memos, key) => {
+            const updatedMemos = memos.filter(memo => memo.id !== memoId)
+            if (updatedMemos.length !== memos.length) {
+                this.memos.set(key, updatedMemos)
+            }
+        })
+        this.saveToStorage()
+    }
+
+    // Reflection은 Block의 일부이므로 updateBlock을 사용
+    updateReflection(blockId: string, reflection: string): void {
+        this.updateBlock(blockId, { reflection })
     }
 }
 

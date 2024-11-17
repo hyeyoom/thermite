@@ -1,8 +1,9 @@
 import { useState, useEffect, useCallback } from 'react'
-import { BlockType } from '@/lib/types'
+import { BlockType, Memo } from '@/lib/types'
 
 export function useBlocks(userId: string, date: string) {
   const [blocks, setBlocks] = useState<BlockType[]>([])
+  const [memos, setMemos] = useState<Memo[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<Error | null>(null)
 
@@ -46,16 +47,22 @@ export function useBlocks(userId: string, date: string) {
 
   const updateBlock = async (blockId: string, updates: Partial<BlockType>) => {
     try {
-      const response = await fetch(`/api/users/${userId}/blocks/${date}/${blockId}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(updates)
-      })
+      const response = await fetch(
+        `/api/users/${userId}/blocks/${date}/${blockId}`,
+        {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(updates)
+        }
+      )
       if (!response.ok) {
         throw new Error('Failed to update block')
       }
+
       setBlocks(blocks.map(block =>
-        block.id === blockId ? { ...block, ...updates } : block
+        block.id === blockId
+          ? { ...block, ...updates }
+          : block
       ))
     } catch (err) {
       setError(err instanceof Error ? err : new Error('Failed to update block'))
@@ -170,8 +177,107 @@ export function useBlocks(userId: string, date: string) {
     }
   }
 
+  const addMemo = async (content: string) => {
+    try {
+      const response = await fetch(
+        `/api/users/${userId}/memos/${date}`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ content })
+        }
+      )
+      if (!response.ok) {
+        throw new Error('Failed to add memo')
+      }
+      const newMemo = await response.json()
+      setMemos([...memos, newMemo])
+    } catch (err) {
+      setError(err instanceof Error ? err : new Error('Failed to add memo'))
+    }
+  }
+
+  const updateMemo = async (memoId: string, content: string) => {
+    try {
+      const response = await fetch(
+        `/api/users/${userId}/memos/${date}/${memoId}`,
+        {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ content })
+        }
+      )
+      if (!response.ok) {
+        throw new Error('Failed to update memo')
+      }
+      setMemos(memos.map(memo =>
+        memo.id === memoId ? { ...memo, content } : memo
+      ))
+    } catch (err) {
+      setError(err instanceof Error ? err : new Error('Failed to update memo'))
+    }
+  }
+
+  const deleteMemo = async (memoId: string) => {
+    try {
+      const response = await fetch(
+        `/api/users/${userId}/memos/${date}/${memoId}`,
+        {
+          method: 'DELETE'
+        }
+      )
+      if (!response.ok) {
+        throw new Error('Failed to delete memo')
+      }
+      setMemos(memos.filter(memo => memo.id !== memoId))
+    } catch (err) {
+      setError(err instanceof Error ? err : new Error('Failed to delete memo'))
+    }
+  }
+
+  const updateReflection = async (blockId: string, reflection: string) => {
+    try {
+      const response = await fetch(
+        `/api/users/${userId}/blocks/${date}/${blockId}/reflection`,
+        {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ reflection })
+        }
+      )
+      if (!response.ok) {
+        throw new Error('Failed to update reflection')
+      }
+
+      setBlocks(blocks.map(block =>
+        block.id === blockId
+          ? { ...block, reflection }
+          : block
+      ))
+    } catch (err) {
+      setError(err instanceof Error ? err : new Error('Failed to update reflection'))
+    }
+  }
+
+  useEffect(() => {
+    const loadMemos = async () => {
+      try {
+        const response = await fetch(`/api/users/${userId}/memos/${date}`)
+        if (!response.ok) {
+          throw new Error('Failed to fetch memos')
+        }
+        const data = await response.json()
+        setMemos(data)
+      } catch (err) {
+        setError(err instanceof Error ? err : new Error('Failed to fetch memos'))
+      }
+    }
+    loadMemos()
+  }, [userId, date])
+
   return {
     blocks,
+    memos,
     isLoading,
     error,
     addBlock,
@@ -179,6 +285,10 @@ export function useBlocks(userId: string, date: string) {
     deleteBlock,
     addTodo,
     toggleTodo,
-    deleteTodo
+    deleteTodo,
+    addMemo,
+    updateMemo,
+    deleteMemo,
+    updateReflection
   }
 }
