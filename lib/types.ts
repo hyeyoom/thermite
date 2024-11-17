@@ -1,22 +1,33 @@
 export interface Todo {
     id: string
+    block_id: string
     content: string
     isCompleted: boolean
+    created_at: string
+    updated_at: string
 }
 
 export interface BlockType {
     id: string
+    user_id: string
+    date: string
     number: number
     title: string
     startTime: string
     endTime: string
     todos: Todo[]
     reflection: string
+    created_at: string
+    updated_at: string
 }
 
 export interface Memo {
     id: string
+    user_id: string
+    date: string
     content: string
+    created_at: string
+    updated_at: string
 }
 
 export interface BlockProps {
