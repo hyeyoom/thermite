@@ -6,7 +6,6 @@ import {Sheet, SheetContent, SheetTrigger} from "@/components/ui/sheet"
 import {LogOut, Settings, User as UserIcon} from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
-import {createSupabaseClientForBrowser} from "@/lib/utils/supabase/client";
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -16,17 +15,14 @@ import {
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu"
 import {cn} from "@/lib/utils"
+import {useAuth} from "@/lib/contexts/auth-context"
 
 interface UserMenuProps {
   user: User
 }
 
 export function UserMenu({ user }: UserMenuProps) {
-  const supabase = createSupabaseClientForBrowser()
-
-  const handleSignOut = async () => {
-    await supabase.auth.signOut()
-  }
+  const { signOut } = useAuth()
 
   return (
     <>
@@ -70,8 +66,11 @@ export function UserMenu({ user }: UserMenuProps) {
                 </li>
                 <li>
                   <button
-                    onClick={handleSignOut}
-                    className={cn("flex items-center gap-2 w-full p-2 rounded-md hover:bg-accent", "text-red-500 hover:text-red-600")}
+                    onClick={signOut}
+                    className={cn(
+                      "flex items-center gap-2 w-full p-2 rounded-md hover:bg-accent",
+                      "text-red-500 hover:text-red-600"
+                    )}
                   >
                     <LogOut className="w-4 h-4" />
                     <span>로그아웃</span>
@@ -119,7 +118,7 @@ export function UserMenu({ user }: UserMenuProps) {
               <Button
                 variant="ghost"
                 className="w-full justify-start gap-3 text-red-500 hover:text-red-600"
-                onClick={handleSignOut}
+                onClick={signOut}
               >
                 <LogOut className="w-4 h-4" />
                 로그아웃
