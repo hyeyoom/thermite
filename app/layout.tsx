@@ -3,6 +3,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import {ThemeProvider} from "@/components/theme-provider"
 import {Navbar} from "@/components/features/navbar";
+import {AuthProvider} from "@/lib/contexts/auth-context";
 
 const geistSans = localFont({
     src: "./fonts/GeistVF.woff",
@@ -28,17 +29,19 @@ export default function RootLayout({
     return (
         <html lang="ko" suppressHydrationWarning>
         <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-        >
-            <Navbar/>
-            <main className="min-h-screen pb-16 md:pb-8 p-4 md:p-8 pt-16">
-                {children}
-            </main>
-        </ThemeProvider>
+        <AuthProvider>
+            <ThemeProvider
+                attribute="class"
+                defaultTheme="system"
+                enableSystem
+                disableTransitionOnChange
+            >
+                <Navbar/>
+                <main className="min-h-screen pb-16 md:pb-8 p-4 md:p-8 pt-16">
+                    {children}
+                </main>
+            </ThemeProvider>
+        </AuthProvider>
         </body>
         </html>
     );
