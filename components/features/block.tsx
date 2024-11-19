@@ -4,7 +4,7 @@ import React, {useCallback, useEffect, useState} from 'react'
 import {Card} from '@/components/ui/card'
 import {Checkbox} from '@/components/ui/checkbox'
 import {Button} from '@/components/ui/button'
-import {PlusCircle, Trash2, X} from 'lucide-react'
+import {PlusCircle, X} from 'lucide-react'
 import {Textarea} from '@/components/ui/textarea'
 import {Dialog, DialogContent, DialogHeader, DialogTitle,} from "@/components/ui/dialog"
 import {cn} from '@/lib/utils'
@@ -17,14 +17,12 @@ const Block = ({
                    endTime,
                    todos,
                    reflection,
-                   isLastBlock,
                    onTitleChange,
                    onTimeChange,
                    onAddTodo,
                    onToggleTodo,
                    onReflectionChange,
                    onDeleteTodo,
-                   onDeleteBlock,
                }: BlockProps) => {
     const [isAddingTodo, setIsAddingTodo] = React.useState(false)
     const [newTodoContent, setNewTodoContent] = React.useState('')
@@ -53,8 +51,9 @@ const Block = ({
     }
 
     const handleTitleBlur = () => {
-        onTitleChange(localTitle)
-        setIsEditingTitle(false)
+        if (localTitle.trim()) {
+            onTitleChange(localTitle)
+        }
     }
 
     useEffect(() => {
@@ -75,7 +74,9 @@ const Block = ({
     const handleReflectionChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
         const newValue = e.target.value
         setLocalReflection(newValue)
-        debouncedReflectionChange(newValue)
+        if (newValue.trim()) {
+            debouncedReflectionChange(newValue)
+        }
     }, [debouncedReflectionChange])
 
     return (
@@ -216,30 +217,6 @@ const Block = ({
                         />
                     </div>
                 </div>
-
-                {/* 삭제 버튼 */}
-                {!isLastBlock && (
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        className="absolute -right-12 top-4 hidden lg:block opacity-0 group-hover:opacity-100 transition-opacity lg:top-1/2 lg:-translate-y-1/2"
-                        onClick={onDeleteBlock}
-                    >
-                        <Trash2 className="h-4 w-4 text-destructive"/>
-                    </Button>
-                )}
-
-                {/* 모바일용 삭제 버튼 */}
-                {!isLastBlock && (
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        className="absolute top-2 right-2 lg:hidden"
-                        onClick={onDeleteBlock}
-                    >
-                        <Trash2 className="h-4 w-4 text-destructive"/>
-                    </Button>
-                )}
             </Card>
 
             <Dialog open={isTimeDialogOpen} onOpenChange={setIsTimeDialogOpen}>

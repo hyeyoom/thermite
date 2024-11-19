@@ -2,6 +2,7 @@
 
 import React from 'react'
 import {format} from "date-fns"
+import {ko} from 'date-fns/locale'
 import {Button} from "@/components/ui/button"
 import {PlusCircle} from "lucide-react"
 import Block from "@/components/features/block";
@@ -21,7 +22,6 @@ const DailyView = () => {
         error,
         addBlock,
         updateBlock,
-        deleteBlock,
         addTodo,
         toggleTodo,
         deleteTodo,
@@ -49,10 +49,13 @@ const DailyView = () => {
     if (error) return <div>에러가 발생했습니다: {error.message}</div>
 
     return (
-        <div className="max-w-6xl mx-auto space-y-8">
+        <div className="max-w-6xl mx-auto pt-12 space-y-8">
             <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                    <span className="text-lg font-medium">
+                <div className="flex items-center gap-3">
+                    <span className="text-2xl font-bold">
+                        {format(today, 'EEEE', { locale: ko })}
+                    </span>
+                    <span className="text-lg text-muted-foreground">
                         {format(today, 'yyyy.MM.dd')}
                     </span>
                 </div>
@@ -83,17 +86,12 @@ const DailyView = () => {
                             endTime={block.endTime}
                             todos={block.todos}
                             reflection={block.reflection}
-                            isLastBlock={blocks.length === 1}
                             onTitleChange={(title) => handleTitleChange(block.id, title)}
                             onTimeChange={(start, end) => handleTimeChange(block.id, start, end)}
                             onAddTodo={(content) => addTodo(block.id, content)}
                             onToggleTodo={(todoId) => toggleTodo(block.id, todoId)}
-                            onReflectionChange={(reflection) => {
-                                console.log('Reflection update triggered:', reflection)
-                                handleReflectionChange(block.id, reflection)
-                            }}
+                            onReflectionChange={(reflection) => handleReflectionChange(block.id, reflection)}
                             onDeleteTodo={(todoId) => deleteTodo(block.id, todoId)}
-                            onDeleteBlock={() => deleteBlock(block.id)}
                         />
                     </React.Fragment>
                 ))}

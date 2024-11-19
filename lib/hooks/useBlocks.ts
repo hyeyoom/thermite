@@ -8,6 +8,23 @@ export function useBlocks(userId: string, date: string) {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<Error | null>(null)
 
+  const initializeBlocks = useCallback(() => {
+    const initialBlocks: BlockType[] = Array.from({ length: 6 }, (_, index) => ({
+      id: `temp_${Date.now()}_${index}`,
+      user_id: userId,
+      date: date,
+      number: index + 1,
+      title: '',
+      startTime: '',
+      endTime: '',
+      todos: [],
+      reflection: '',
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    }))
+    setBlocks(initialBlocks)
+  }, [userId, date])
+
   const fetchBlocks = useCallback(async () => {
     try {
       const response = await fetch(`/api/users/${userId}/blocks/${date}`)
@@ -15,13 +32,36 @@ export function useBlocks(userId: string, date: string) {
         throw new Error('Failed to fetch blocks')
       }
       const data = await response.json()
-      setBlocks(data)
+      
+      const existingBlocks = data || []
+      const emptyBlocksNeeded = 6 - existingBlocks.length
+      
+      if (emptyBlocksNeeded > 0) {
+        const emptyBlocks: BlockType[] = Array.from({ length: emptyBlocksNeeded }, (_, index) => ({
+          id: `temp_${Date.now()}_${existingBlocks.length + index}`,
+          user_id: userId,
+          date: date,
+          number: existingBlocks.length + index + 1,
+          title: '',
+          startTime: '',
+          endTime: '',
+          todos: [],
+          reflection: '',
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        }))
+        
+        setBlocks([...existingBlocks, ...emptyBlocks])
+      } else {
+        setBlocks(existingBlocks)
+      }
     } catch (err) {
-      setError(err instanceof Error ? err : new Error('Failed to fetch blocks'))
+      console.error('Error fetching blocks:', err)
+      initializeBlocks()
     } finally {
       setIsLoading(false)
     }
-  }, [userId, date])
+  }, [userId, date, initializeBlocks])
 
   useEffect(() => {
     fetchBlocks()
@@ -48,23 +88,39 @@ export function useBlocks(userId: string, date: string) {
 
   const updateBlock = async (blockId: string, updates: Partial<BlockType>) => {
     try {
-      const response = await fetch(
-        `/api/users/${userId}/blocks/${date}/${blockId}`,
-        {
+      const hasContent = updates.title?.trim() || 
+                        updates.startTime || 
+                        updates.endTime || 
+                        updates.reflection?.trim()
+
+      if (blockId.startsWith('temp_') && hasContent) {
+        const response = await fetch(`/api/users/${userId}/blocks/${date}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            ...updates, 
+            number: blocks.findIndex(b => b.id === blockId) + 1 
+          })
+        })
+        if (!response.ok) throw new Error('Failed to create block')
+        const newBlock = await response.json()
+        
+        const updatedBlocks = blocks.map(block => 
+          block.id === blockId ? newBlock : block
+        )
+        setBlocks(updatedBlocks)
+      } else if (!blockId.startsWith('temp_')) {
+        const response = await fetch(`/api/users/${userId}/blocks/${date}/${blockId}`, {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(updates)
-        }
-      )
-      if (!response.ok) {
-        throw new Error('Failed to update block')
+        })
+        if (!response.ok) throw new Error('Failed to update block')
+        
+        setBlocks(blocks.map(block =>
+          block.id === blockId ? { ...block, ...updates } : block
+        ))
       }
-
-      setBlocks(blocks.map(block =>
-        block.id === blockId
-          ? { ...block, ...updates }
-          : block
-      ))
     } catch (err) {
       setError(err instanceof Error ? err : new Error('Failed to update block'))
     }

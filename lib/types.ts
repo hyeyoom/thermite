@@ -37,14 +37,12 @@ export interface BlockProps {
     endTime: string
     todos: Todo[]
     reflection: string
-    isLastBlock: boolean
     onTitleChange: (value: string) => void
     onTimeChange: (start: string, end: string) => void
     onAddTodo: (content: string) => void
     onToggleTodo: (todoId: string) => void
     onReflectionChange: (value: string) => void
     onDeleteTodo: (todoId: string) => void
-    onDeleteBlock: () => void
 }
 
 export interface MemoSectionProps {

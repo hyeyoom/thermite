@@ -1,227 +1,30 @@
 {
   "blocks": {
-    "test-user_2024-11-17": [
+    "test-user_2024-11-19": [
       {
-        "id": "1731833451169",
+        "id": "1732026998072",
         "user_id": "test-user",
-        "date": "2024-11-17",
+        "date": "2024-11-19",
         "number": 1,
-        "title": "흑흑",
-        "startTime": "03:00",
-        "endTime": "06:30",
-        "todos": [
-          {
-            "id": "1731834038406",
-            "block_id": "1731833451169",
-            "content": "으앙",
-            "isCompleted": false,
-            "created_at": "2024-11-17T09:00:38.406Z",
-            "updated_at": "2024-11-17T09:00:38.406Z"
-          },
-          {
-            "id": "1731850104480",
-            "block_id": "1731833451169",
-            "content": "으앟",
-            "isCompleted": false,
-            "created_at": "2024-11-17T13:28:24.480Z",
-            "updated_at": "2024-11-17T13:28:24.480Z"
-          }
-        ],
-        "reflection": "으앙 짜증 으앙 짜중나\n아니야 하면 돼",
-        "created_at": "2024-11-17T08:50:51.169Z",
-        "updated_at": "2024-11-17T13:41:01.886Z"
-      },
-      {
-        "id": "1731834045437",
-        "user_id": "test-user",
-        "date": "2024-11-17",
-        "number": 2,
-        "title": "와후",
+        "title": "으앙",
         "startTime": "",
         "endTime": "",
         "todos": [
           {
-            "id": "1731838487216",
-            "block_id": "1731834045437",
-            "content": "ㄴㅁㅇㄹㅁㄴㅇㄹㅁㄴㅇㄹ",
-            "isCompleted": true,
-            "created_at": "2024-11-17T10:14:47.216Z",
-            "updated_at": "2024-11-17T13:41:15.016Z"
+            "id": "1732027019228",
+            "block_id": "1732026998072",
+            "content": "영웅아 호걸아",
+            "isCompleted": false,
+            "created_at": "2024-11-19T14:36:59.228Z",
+            "updated_at": "2024-11-19T14:36:59.228Z"
           }
         ],
-        "reflection": "히익\n한국말도 이제 잘돼?\n",
-        "created_at": "2024-11-17T09:00:45.437Z",
-        "updated_at": "2024-11-17T13:29:22.803Z"
-      }
-    ],
-    "test-user_2024-11-18": [
-      {
-        "id": "1731901502306",
-        "user_id": "test-user",
-        "date": "2024-11-18",
-        "number": 1,
-        "title": "ㅇㄹㅁㄴㅇㄹ",
-        "startTime": "",
-        "endTime": "",
-        "todos": [
-          {
-            "id": "1731901522853",
-            "block_id": "1731901502306",
-            "content": "ㅁㄴㅇㄹㅁㄴㅇㄹ",
-            "isCompleted": false,
-            "created_at": "2024-11-18T03:45:22.853Z",
-            "updated_at": "2024-11-18T03:45:22.853Z"
-          },
-          {
-            "id": "1731901524248",
-            "block_id": "1731901502306",
-            "content": "ㅁㄴㅇㄹㅁㄴㅇㄹㅁㄴㅇㄹ",
-            "isCompleted": false,
-            "created_at": "2024-11-18T03:45:24.248Z",
-            "updated_at": "2024-11-18T03:45:28.566Z"
-          },
-          {
-            "id": "1731901526009",
-            "block_id": "1731901502306",
-            "content": "ㅁㄴㅇㄹㅁㄴㅇㄹㅁㄴㅇㄹ",
-            "isCompleted": false,
-            "created_at": "2024-11-18T03:45:26.009Z",
-            "updated_at": "2024-11-18T03:45:26.009Z"
-          },
-          {
-            "id": "1731901527739",
-            "block_id": "1731901502306",
-            "content": "ㅁㄴㅇㄹㅁㄴㅇㄹㅁㅇㄴㄹ",
-            "isCompleted": true,
-            "created_at": "2024-11-18T03:45:27.739Z",
-            "updated_at": "2024-11-18T14:33:24.929Z"
-          }
-        ],
-        "reflection": "ㅁㅇㄴㄴㄹㄹㅁㄴㅇㅇ",
-        "created_at": "2024-11-18T03:45:02.306Z",
-        "updated_at": "2024-11-18T03:45:27.739Z"
-      },
-      {
-        "id": "1731901504909",
-        "user_id": "test-user",
-        "date": "2024-11-18",
-        "number": 2,
-        "title": "",
-        "startTime": "",
-        "endTime": "",
-        "todos": [],
         "reflection": "",
-        "created_at": "2024-11-18T03:45:04.909Z",
-        "updated_at": "2024-11-18T03:45:04.909Z"
-      },
-      {
-        "id": "1731901505692",
-        "user_id": "test-user",
-        "date": "2024-11-18",
-        "number": 3,
-        "title": "",
-        "startTime": "",
-        "endTime": "",
-        "todos": [],
-        "reflection": "",
-        "created_at": "2024-11-18T03:45:05.692Z",
-        "updated_at": "2024-11-18T03:45:05.692Z"
-      },
-      {
-        "id": "1731901506553",
-        "user_id": "test-user",
-        "date": "2024-11-18",
-        "number": 4,
-        "title": "",
-        "startTime": "",
-        "endTime": "",
-        "todos": [],
-        "reflection": "",
-        "created_at": "2024-11-18T03:45:06.553Z",
-        "updated_at": "2024-11-18T03:45:06.553Z"
-      },
-      {
-        "id": "1731901507807",
-        "user_id": "test-user",
-        "date": "2024-11-18",
-        "number": 5,
-        "title": "",
-        "startTime": "",
-        "endTime": "",
-        "todos": [],
-        "reflection": "",
-        "created_at": "2024-11-18T03:45:07.807Z",
-        "updated_at": "2024-11-18T03:45:07.807Z"
-      },
-      {
-        "id": "1731901509777",
-        "user_id": "test-user",
-        "date": "2024-11-18",
-        "number": 6,
-        "title": "",
-        "startTime": "",
-        "endTime": "",
-        "todos": [],
-        "reflection": "",
-        "created_at": "2024-11-18T03:45:09.777Z",
-        "updated_at": "2024-11-18T03:45:09.777Z"
+        "created_at": "2024-11-19T14:36:38.072Z",
+        "updated_at": "2024-11-19T14:36:59.228Z"
       }
     ]
   },
-  "memos": {
-    "test-user_2024-11-17": [
-      {
-        "id": "1731850122617",
-        "user_id": "test-user",
-        "date": "2024-11-17",
-        "content": "이이아주아주아주아주",
-        "created_at": "2024-11-17T13:28:42.617Z",
-        "updated_at": "2024-11-17T13:29:08.288Z"
-      }
-    ],
-    "test-user_2024-11-18": [
-      {
-        "id": "1731901513642",
-        "user_id": "test-user",
-        "date": "2024-11-18",
-        "content": "ㅁㅇㄴㄹㅁㄴㅇㄹ",
-        "created_at": "2024-11-18T03:45:13.642Z",
-        "updated_at": "2024-11-18T03:45:13.642Z"
-      },
-      {
-        "id": "1731901515842",
-        "user_id": "test-user",
-        "date": "2024-11-18",
-        "content": "ㅁㄴㅇㄹㅁㅇㄴㄹ",
-        "created_at": "2024-11-18T03:45:15.842Z",
-        "updated_at": "2024-11-18T03:45:15.842Z"
-      }
-    ]
-  },
-  "assessments": {
-    "test-user_2024-11-17": [
-      {
-        "id": "1731850126799",
-        "type": "good",
-        "content": "나이스스스스스ㅡㅅ"
-      },
-      {
-        "id": "1731850130582",
-        "type": "bad",
-        "content": "아쉬운게 없다"
-      },
-      {
-        "id": "1731850134103",
-        "type": "next",
-        "content": "못한게 없다"
-      }
-    ],
-    "test-user_2024-11-18": [
-      {
-        "id": "1731901518287",
-        "type": "good",
-        "content": "ㅁㄴㅇㄹㅁㄴㅇㄹ"
-      }
-    ]
-  }
+  "memos": {},
+  "assessments": {}
 }
