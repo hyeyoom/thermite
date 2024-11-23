@@ -2,13 +2,11 @@
 
 import React, {useCallback, useEffect, useState} from 'react'
 import {Card} from '@/components/ui/card'
-import {Checkbox} from '@/components/ui/checkbox'
 import {Button} from '@/components/ui/button'
-import {PlusCircle, X} from 'lucide-react'
 import {Textarea} from '@/components/ui/textarea'
 import {Dialog, DialogContent, DialogHeader, DialogTitle,} from "@/components/ui/dialog"
-import {cn} from '@/lib/utils'
 import {BlockProps} from "@/lib/types";
+import TodoList from './todo-list'
 
 const Block = ({
                    number,
@@ -24,22 +22,12 @@ const Block = ({
                    onReflectionChange,
                    onDeleteTodo,
                }: BlockProps) => {
-    const [isAddingTodo, setIsAddingTodo] = React.useState(false)
-    const [newTodoContent, setNewTodoContent] = React.useState('')
     const [isTimeDialogOpen, setIsTimeDialogOpen] = React.useState(false)
     const [tempStartTime, setTempStartTime] = React.useState(startTime)
     const [tempEndTime, setTempEndTime] = React.useState(endTime)
     const [isEditingTitle, setIsEditingTitle] = React.useState(false)
     const [localTitle, setLocalTitle] = React.useState(title)
     const [localReflection, setLocalReflection] = useState(reflection || '')
-
-    const handleAddTodo = () => {
-        if (newTodoContent.trim()) {
-            onAddTodo(newTodoContent)
-            setNewTodoContent('')
-            setIsAddingTodo(false)
-        }
-    }
 
     const handleTimeSubmit = () => {
         onTimeChange(tempStartTime, tempEndTime)
@@ -132,80 +120,12 @@ const Block = ({
                     </div>
 
                     {/* Todo 리스트 */}
-                    <div className="flex-1 min-w-0">
-                        <div className="space-y-2">
-                            {todos.map((todo) => (
-                                <div key={todo.id} className="group flex items-center gap-2">
-                                    <div
-                                        className="flex items-center gap-2 flex-1 min-w-0"
-                                        onClick={() => onToggleTodo(todo.id)}
-                                    >
-                                        <Checkbox
-                                            checked={todo.isCompleted}
-                                            onCheckedChange={() => onToggleTodo(todo.id)}
-                                            className="h-5 w-5 lg:h-4 lg:w-4"
-                                        />
-                                        <span
-                                            className={cn(
-                                                "flex-1 min-w-0 truncate py-1",
-                                                todo.isCompleted && "line-through text-muted-foreground"
-                                            )}
-                                        >
-                      {todo.content}
-                    </span>
-                                    </div>
-                                    <Button
-                                        variant="ghost"
-                                        size="icon"
-                                        className="h-6 w-6 p-0 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity flex-none"
-                                        onClick={() => onDeleteTodo(todo.id)}
-                                    >
-                                        <X className="h-4 w-4 text-muted-foreground hover:text-destructive"/>
-                                    </Button>
-                                </div>
-                            ))}
-
-                            {isAddingTodo ? (
-                                <div className="flex items-center gap-2">
-                                    <input
-                                        type="text"
-                                        value={newTodoContent}
-                                        onChange={(e) => setNewTodoContent(e.target.value)}
-                                        className="flex-1 text-sm px-2 py-1 border-b-2 border-input focus:outline-none focus:border-foreground transition-colors"
-                                        placeholder="할 일을 입력하세요"
-                                        onKeyDown={(e) => {
-                                            if (e.key === 'Enter') {
-                                                handleAddTodo()
-                                            }
-                                        }}
-                                        autoFocus
-                                    />
-                                    <Button size="sm" onClick={handleAddTodo}>추가</Button>
-                                    <Button
-                                        size="sm"
-                                        variant="ghost"
-                                        onClick={() => {
-                                            setIsAddingTodo(false)
-                                            setNewTodoContent('')
-                                        }}
-                                    >
-                                        취소
-                                    </Button>
-                                </div>
-                            ) : (
-                                <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={() => setIsAddingTodo(true)}
-                                    disabled={todos.length >= 6}
-                                    className="w-full justify-start"
-                                >
-                                    <PlusCircle className="h-4 w-4 mr-2"/>
-                                    할 일 추가 ({todos.length}/6)
-                                </Button>
-                            )}
-                        </div>
-                    </div>
+                    <TodoList
+                        todos={todos}
+                        onAddTodo={onAddTodo}
+                        onToggleTodo={onToggleTodo}
+                        onDeleteTodo={onDeleteTodo}
+                    />
 
                     {/* 회고 메모 */}
                     <div className="flex-none lg:w-64">
