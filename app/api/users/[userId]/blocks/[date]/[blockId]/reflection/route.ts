@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server'
 import { BlockService } from '@/server/services/block.service'
+import { BlockServiceImpl } from '@/server/services/legacy.block.service'
 
-const blockService = new BlockService()
+const blockService: BlockService = new BlockServiceImpl()
 
 interface RouteParams {
     userId: string
@@ -26,4 +27,4 @@ export async function PATCH(
             { status: 500 }
         )
     }
-} 
+}

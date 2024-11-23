@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server'
-import { BlockService } from '@/server/services/block.service'
+import { BlockServiceImpl } from '@/server/services/legacy.block.service'
 import {BlockType} from "@/lib/types";
 
-const blockService = new BlockService()
+const blockService = new BlockServiceImpl()
 
 interface RouteParams {
     date: string

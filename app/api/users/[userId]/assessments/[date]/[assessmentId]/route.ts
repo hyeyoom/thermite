@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server'
 import { AssessmentService } from '@/server/services/assessment.service'
-import { BlockService } from '@/server/services/block.service'
+import { BlockServiceImpl } from '@/server/services/legacy.block.service'
 
-const assessmentService: AssessmentService = new BlockService()
+const assessmentService: AssessmentService = new BlockServiceImpl()
 
 interface RouteParams {
     userId: string
@@ -45,4 +45,4 @@ export async function DELETE(
             { status: 500 }
         )
     }
-} 
+}

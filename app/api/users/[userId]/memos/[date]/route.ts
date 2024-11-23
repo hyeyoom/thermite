@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server'
 import { MemoService } from '@/server/services/memo.service'
-import { BlockService } from '@/server/services/block.service'
+import { BlockServiceImpl } from '@/server/services/legacy.block.service'
 
-const memoService: MemoService = new BlockService()
+const memoService: MemoService = new BlockServiceImpl()
 
 interface RouteParams {
     userId: string
@@ -44,4 +44,4 @@ export async function POST(
             { status: 500 }
         )
     }
-} 
+}

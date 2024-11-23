@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server'
 import { AssessmentService } from '@/server/services/assessment.service'
-import { BlockService } from '@/server/services/block.service'
+import { BlockServiceImpl } from '@/server/services/legacy.block.service'
 
 // 임시로 BlockService를 통해 AssessmentService를 얻습니다
-const assessmentService: AssessmentService = new BlockService()
+const assessmentService: AssessmentService = new BlockServiceImpl()
 
 interface RouteParams {
     userId: string
@@ -45,4 +45,4 @@ export async function POST(
             { status: 500 }
         )
     }
-} 
+}

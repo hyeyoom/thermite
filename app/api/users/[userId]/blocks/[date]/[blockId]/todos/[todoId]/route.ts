@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server'
 import { TodoService } from '@/server/services/todo.service'
-import { BlockService } from '@/server/services/block.service'
+import { BlockServiceImpl } from '@/server/services/legacy.block.service'
 
-const todoService: TodoService = new BlockService()
+const todoService: TodoService = new BlockServiceImpl()
 
 interface RouteParams {
     userId: string
@@ -46,4 +46,4 @@ export async function DELETE(
             { status: 500 }
         )
     }
-} 
+}

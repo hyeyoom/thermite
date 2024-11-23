@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server'
 import { BlockService } from '@/server/services/block.service'
+import { BlockServiceImpl } from '@/server/services/legacy.block.service'
 
-const blockService = new BlockService()
+const blockService: BlockService = new BlockServiceImpl()
 
 interface RouteParams {
     userId: string
@@ -12,7 +13,7 @@ interface RouteParams {
 function isValidDate(dateStr: string): boolean {
     const regex = /^\d{4}-\d{2}-\d{2}$/
     if (!regex.test(dateStr)) return false
-    
+
     const date = new Date(dateStr)
     return date instanceof Date && !isNaN(date.getTime())
 }
@@ -67,4 +68,4 @@ export async function POST(
             { status: 500 }
         )
     }
-} 
+}
