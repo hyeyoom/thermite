@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server'
+import { TodoService } from '@/server/services/todo.service'
 import { BlockService } from '@/server/services/block.service'
 
-const blockService = new BlockService()
+const todoService: TodoService = new BlockService()
 
 interface RouteParams {
     userId: string
@@ -9,29 +10,14 @@ interface RouteParams {
     blockId: string
 }
 
-function isValidDate(dateStr: string): boolean {
-    const regex = /^\d{4}-\d{2}-\d{2}$/
-    if (!regex.test(dateStr)) return false
-    
-    const date = new Date(dateStr)
-    return date instanceof Date && !isNaN(date.getTime())
-}
-
 export async function GET(
     request: Request,
     { params }: { params: RouteParams }
 ) {
-    const { date, blockId } = params
-
-    if (!isValidDate(date)) {
-        return NextResponse.json(
-            { error: 'Invalid date format. Use YYYY-MM-DD' },
-            { status: 400 }
-        )
-    }
+    const { blockId } = params
 
     try {
-        const todos = await blockService.getTodos(blockId)
+        const todos = await todoService.getTodos(blockId)
         return NextResponse.json(todos)
     } catch (error) {
         console.error('Error fetching todos:', error)
@@ -50,7 +36,7 @@ export async function POST(
 
     try {
         const todoData = await request.json()
-        const todo = await blockService.addTodo(blockId, todoData)
+        const todo = await todoService.addTodo(blockId, todoData)
         return NextResponse.json(todo)
     } catch (error) {
         console.error('Error creating todo:', error)

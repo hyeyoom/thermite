@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server'
+import { TodoService } from '@/server/services/todo.service'
 import { BlockService } from '@/server/services/block.service'
 
-const blockService = new BlockService()
+const todoService: TodoService = new BlockService()
 
 interface RouteParams {
     userId: string
@@ -18,7 +19,7 @@ export async function PATCH(
 
     try {
         const updates = await request.json()
-        await blockService.updateTodo(todoId, updates)
+        await todoService.updateTodo(todoId, updates)
         return NextResponse.json({ success: true })
     } catch (error) {
         console.error('Error updating todo:', error)
@@ -36,7 +37,7 @@ export async function DELETE(
     const { todoId } = params
 
     try {
-        await blockService.deleteTodo(todoId)
+        await todoService.deleteTodo(todoId)
         return NextResponse.json({ success: true })
     } catch (error) {
         console.error('Error deleting todo:', error)
