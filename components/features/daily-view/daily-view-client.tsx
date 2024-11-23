@@ -1,33 +1,23 @@
 'use client'
 
+import {useBlocks} from '@/lib/hooks/useBlocks'
+import DateHeader from "@/components/features/date-header";
+import Block from "@/components/features/block";
+import MemoSection from "@/components/features/memo-section";
 import React from 'react'
-import {format} from "date-fns"
-import {Button} from "@/components/ui/button"
-import {PlusCircle} from "lucide-react"
-import Block from "@/components/features/block"
-import MemoSection from "@/components/features/memo-section"
-import {useBlocks} from "@/lib/hooks/useBlocks"
-import DateHeader from "@/components/features/date-header"
-import { createSupabaseClientForServer } from '@/lib/utils/supabase/server'
 
-const DailyView = async () => {
-    const today = new Date()
-    const formattedDate = format(today, 'yyyy-MM-dd')
-    
-    const supabase = await createSupabaseClientForServer()
-    const { data: { user } } = await supabase.auth.getUser()
-    
-    if (!user) {
-        return <div>로그인이 필요합니다.</div>
-    }
+interface DailyViewClientProps {
+    userId: string
+    date: string
+}
 
+export function DailyViewClient({userId, date}: DailyViewClientProps) {
     const {
         blocks,
         memos,
         assessments,
         isLoading,
         error,
-        addBlock,
         updateBlock,
         addTodo,
         toggleTodo,
@@ -38,7 +28,7 @@ const DailyView = async () => {
         addAssessment,
         updateAssessment,
         deleteAssessment
-    } = useBlocks(user.id, formattedDate)
+    } = useBlocks(userId, date)
 
     const handleTitleChange = (blockId: string, title: string) => {
         updateBlock(blockId, {title})
@@ -57,7 +47,7 @@ const DailyView = async () => {
 
     return (
         <div className="max-w-6xl mx-auto pt-12 space-y-8">
-            <DateHeader date={today} />
+            <DateHeader date={new Date(date)}/>
             <div className="space-y-4">
                 {blocks.map((block, index) => (
                     <React.Fragment key={block.id}>
@@ -87,24 +77,12 @@ const DailyView = async () => {
                             onTimeChange={(start, end) => handleTimeChange(block.id, start, end)}
                             onAddTodo={(content) => addTodo(block.id, content)}
                             onToggleTodo={(todoId) => toggleTodo(block.id, todoId)}
-                            onReflectionChange={(reflection) => handleReflectionChange(block.id, reflection)}
                             onDeleteTodo={(todoId) => deleteTodo(block.id, todoId)}
+                            onReflectionChange={(reflection) => handleReflectionChange(block.id, reflection)}
                         />
                     </React.Fragment>
                 ))}
-
-                {blocks.length < 6 && (
-                    <Button
-                        variant="outline"
-                        className="w-full"
-                        onClick={addBlock}
-                    >
-                        <PlusCircle className="h-4 w-4 mr-2"/>
-                        블록 추가 ({blocks.length}/6)
-                    </Button>
-                )}
             </div>
-
             <MemoSection
                 memos={memos}
                 assessments={assessments}
@@ -118,5 +96,3 @@ const DailyView = async () => {
         </div>
     )
 }
-
-export default DailyView

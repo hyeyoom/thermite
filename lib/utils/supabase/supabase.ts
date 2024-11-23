@@ -14,6 +14,7 @@ export type Database = {
           block_number: number
           block_title: string
           created_at: string
+          date: string
           end_time: string
           id: string
           reflection: string
@@ -25,6 +26,7 @@ export type Database = {
           block_number: number
           block_title?: string
           created_at?: string
+          date: string
           end_time?: string
           id?: string
           reflection?: string
@@ -36,6 +38,7 @@ export type Database = {
           block_number?: number
           block_title?: string
           created_at?: string
+          date?: string
           end_time?: string
           id?: string
           reflection?: string

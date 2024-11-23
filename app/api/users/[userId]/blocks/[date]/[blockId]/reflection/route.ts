@@ -1,12 +1,7 @@
 import { NextResponse } from 'next/server'
-import { BlockService } from '@/server/services/block.service'
-import { BlockServiceImpl } from '@/server/services/legacy.block.service'
-
-const blockService: BlockService = new BlockServiceImpl()
+import { getBlockService } from '@/server/services/factories/block.service.factory'
 
 interface RouteParams {
-    userId: string
-    date: string
     blockId: string
 }
 
@@ -15,6 +10,7 @@ export async function PATCH(
     { params }: { params: RouteParams }
 ) {
     const { blockId } = params
+    const blockService = await getBlockService()
 
     try {
         const { reflection } = await request.json()
