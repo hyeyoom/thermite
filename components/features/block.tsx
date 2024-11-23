@@ -2,11 +2,10 @@
 
 import React, {useCallback, useEffect, useState} from 'react'
 import {Card} from '@/components/ui/card'
-import {Button} from '@/components/ui/button'
 import {Textarea} from '@/components/ui/textarea'
-import {Dialog, DialogContent, DialogHeader, DialogTitle,} from "@/components/ui/dialog"
 import {BlockProps} from "@/lib/types";
 import TodoList from './todo-list'
+import TimeRangeDialog from './time-range-dialog'
 
 const Block = ({
                    number,
@@ -23,16 +22,10 @@ const Block = ({
                    onDeleteTodo,
                }: BlockProps) => {
     const [isTimeDialogOpen, setIsTimeDialogOpen] = React.useState(false)
-    const [tempStartTime, setTempStartTime] = React.useState(startTime)
-    const [tempEndTime, setTempEndTime] = React.useState(endTime)
     const [isEditingTitle, setIsEditingTitle] = React.useState(false)
     const [localTitle, setLocalTitle] = React.useState(title)
     const [localReflection, setLocalReflection] = useState(reflection || '')
 
-    const handleTimeSubmit = () => {
-        onTimeChange(tempStartTime, tempEndTime)
-        setIsTimeDialogOpen(false)
-    }
 
     const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setLocalTitle(e.target.value)
@@ -139,65 +132,13 @@ const Block = ({
                 </div>
             </Card>
 
-            <Dialog open={isTimeDialogOpen} onOpenChange={setIsTimeDialogOpen}>
-                <DialogContent className="sm:max-w-[425px]">
-                    <DialogHeader>
-                        <DialogTitle>시간 범위 설정</DialogTitle>
-                    </DialogHeader>
-                    <div className="flex flex-col gap-4 py-4">
-                        <div className="grid grid-cols-2 gap-4">
-                            <div className="space-y-2">
-                                <label className="text-sm font-medium">시작 시간</label>
-                                <select
-                                    className="w-full px-3 py-2 rounded-md border border-input bg-background"
-                                    value={tempStartTime}
-                                    onChange={(e) => setTempStartTime(e.target.value)}
-                                >
-                                    <option value="">선택...</option>
-                                    {Array.from({length: 48}).map((_, i) => {
-                                        const hour = Math.floor(i / 2).toString().padStart(2, '0')
-                                        const minute = i % 2 === 0 ? '00' : '30'
-                                        const time = `${hour}:${minute}`
-                                        return (
-                                            <option key={time} value={time}>
-                                                {time}
-                                            </option>
-                                        )
-                                    })}
-                                </select>
-                            </div>
-                            <div className="space-y-2">
-                                <label className="text-sm font-medium">종료 시간</label>
-                                <select
-                                    className="w-full px-3 py-2 rounded-md border border-input bg-background"
-                                    value={tempEndTime}
-                                    onChange={(e) => setTempEndTime(e.target.value)}
-                                >
-                                    <option value="">선택...</option>
-                                    {Array.from({length: 48}).map((_, i) => {
-                                        const hour = Math.floor(i / 2).toString().padStart(2, '0')
-                                        const minute = i % 2 === 0 ? '00' : '30'
-                                        const time = `${hour}:${minute}`
-                                        return (
-                                            <option key={time} value={time}>
-                                                {time}
-                                            </option>
-                                        )
-                                    })}
-                                </select>
-                            </div>
-                        </div>
-                        <div className="flex justify-end gap-2">
-                            <Button variant="outline" onClick={() => setIsTimeDialogOpen(false)}>
-                                취소
-                            </Button>
-                            <Button onClick={handleTimeSubmit}>
-                                확인
-                            </Button>
-                        </div>
-                    </div>
-                </DialogContent>
-            </Dialog>
+            <TimeRangeDialog
+                isOpen={isTimeDialogOpen}
+                onClose={() => setIsTimeDialogOpen(false)}
+                startTime={startTime}
+                endTime={endTime}
+                onSubmit={onTimeChange}
+            />
         </>
     )
 }
