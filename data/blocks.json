@@ -44,14 +44,36 @@
             "id": "1732379583894",
             "block_id": "1732379580340",
             "content": "사나이 테스트",
-            "isCompleted": false,
+            "isCompleted": true,
             "created_at": "2024-11-23T16:33:03.894Z",
-            "updated_at": "2024-11-23T16:33:03.894Z"
+            "updated_at": "2024-11-23T16:37:20.288Z"
           }
         ],
         "reflection": "",
         "created_at": "2024-11-23T16:33:00.340Z",
         "updated_at": "2024-11-23T16:33:03.894Z"
+      },
+      {
+        "id": "1732379833328",
+        "user_id": "test-user",
+        "date": "2024-11-24",
+        "number": 3,
+        "title": "컷-",
+        "startTime": "",
+        "endTime": "",
+        "todos": [
+          {
+            "id": "1732379836661",
+            "block_id": "1732379833328",
+            "content": "사나이가 죽었어요",
+            "isCompleted": true,
+            "created_at": "2024-11-23T16:37:16.661Z",
+            "updated_at": "2024-11-23T16:37:18.561Z"
+          }
+        ],
+        "reflection": "",
+        "created_at": "2024-11-23T16:37:13.328Z",
+        "updated_at": "2024-11-23T16:37:16.661Z"
       }
     ]
   },
