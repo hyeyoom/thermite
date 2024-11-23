@@ -67,7 +67,7 @@ const Block = ({
                     {/* 블록 번호와 시간 */}
                     <button
                         onClick={() => setIsTimeDialogOpen(true)}
-                        className="flex-none w-14 h-14 flex flex-col items-center justify-center rounded-lg bg-muted hover:bg-muted/80 transition-colors"
+                        className="flex-none w-14 h-14 flex flex-col items-center justify-center rounded-lg bg-muted hover:text-primary transition-colors"
                     >
                         <span className="text-lg font-semibold">{number}</span>
                         {startTime && endTime ? (
@@ -77,7 +77,7 @@ const Block = ({
                                 <span>{endTime}</span>
                             </div>
                         ) : (
-                            <span className="text-[11px] text-muted-foreground">시간 설정</span>
+                            <span className="text-[11px] hover:text-primary text-muted-foreground">시간 설정</span>
                         )}
                     </button>
 
@@ -104,7 +104,7 @@ const Block = ({
                             ) : (
                                 <button
                                     onClick={() => setIsEditingTitle(true)}
-                                    className="w-full text-left font-medium hover:text-primary truncate"
+                                    className="w-full text-left font-bold hover:text-primary truncate"
                                 >
                                     {title || '제목 없음'}
                                 </button>

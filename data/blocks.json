@@ -1,45 +1,5 @@
 {
-  "blocks": {
-    "test-user_2024-11-19": [
-      {
-        "id": "1732026998072",
-        "user_id": "test-user",
-        "date": "2024-11-19",
-        "number": 1,
-        "title": "으앙",
-        "startTime": "",
-        "endTime": "",
-        "todos": [
-          {
-            "id": "1732027019228",
-            "block_id": "1732026998072",
-            "content": "영웅아 호걸아",
-            "isCompleted": false,
-            "created_at": "2024-11-19T14:36:59.228Z",
-            "updated_at": "2024-11-19T14:36:59.228Z"
-          }
-        ],
-        "reflection": "",
-        "created_at": "2024-11-19T14:36:38.072Z",
-        "updated_at": "2024-11-19T14:36:59.228Z"
-      }
-    ],
-    "test-user_2024-11-23": [
-      {
-        "id": "1732361305505",
-        "user_id": "test-user",
-        "date": "2024-11-23",
-        "number": 1,
-        "title": "제목 없어 진짜루?",
-        "startTime": "03:30",
-        "endTime": "21:00",
-        "todos": [],
-        "reflection": "",
-        "created_at": "2024-11-23T11:28:25.505Z",
-        "updated_at": "2024-11-23T11:28:35.140Z"
-      }
-    ]
-  },
+  "blocks": {},
   "memos": {},
   "assessments": {}
 }
