@@ -2,12 +2,12 @@
 
 import React from 'react'
 import {format} from "date-fns"
-import {ko} from 'date-fns/locale'
 import {Button} from "@/components/ui/button"
 import {PlusCircle} from "lucide-react"
-import Block from "@/components/features/block";
-import MemoSection from "@/components/features/memo-section";
-import {useBlocks} from "@/lib/hooks/useBlocks";
+import Block from "@/components/features/block"
+import MemoSection from "@/components/features/memo-section"
+import {useBlocks} from "@/lib/hooks/useBlocks"
+import DateHeader from "@/components/features/date-header"
 
 const DailyView = () => {
     const today = new Date()
@@ -42,7 +42,7 @@ const DailyView = () => {
     }
 
     const handleReflectionChange = (blockId: string, reflection: string) => {
-        updateBlock(blockId, { reflection })
+        updateBlock(blockId, {reflection})
     }
 
     if (isLoading) return <div>로딩 중...</div>
@@ -50,17 +50,7 @@ const DailyView = () => {
 
     return (
         <div className="max-w-6xl mx-auto pt-12 space-y-8">
-            <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                    <span className="text-2xl font-bold">
-                        {format(today, 'EEEE', { locale: ko })}
-                    </span>
-                    <span className="text-lg text-muted-foreground">
-                        {format(today, 'yyyy.MM.dd')}
-                    </span>
-                </div>
-            </div>
-
+            <DateHeader date={today} />
             <div className="space-y-4">
                 {blocks.map((block, index) => (
                     <React.Fragment key={block.id}>
