@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server'
+import { MemoService } from '@/server/services/memo.service'
 import { BlockService } from '@/server/services/block.service'
 
-const blockService = new BlockService()
+const memoService: MemoService = new BlockService()
 
 interface RouteParams {
     userId: string
@@ -17,7 +18,7 @@ export async function PATCH(
 
     try {
         const updates = await request.json()
-        await blockService.updateMemo(memoId, updates)
+        await memoService.updateMemo(memoId, updates)
         return NextResponse.json({ success: true })
     } catch (error) {
         console.error('Error updating memo:', error)
@@ -35,7 +36,7 @@ export async function DELETE(
     const { memoId } = params
 
     try {
-        await blockService.deleteMemo(memoId)
+        await memoService.deleteMemo(memoId)
         return NextResponse.json({ success: true })
     } catch (error) {
         console.error('Error deleting memo:', error)

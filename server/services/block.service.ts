@@ -1,8 +1,9 @@
 import {Assessment, BlockType, Memo, Todo} from '@/lib/types'
 import {memoryStore} from '../storage/memory-store'
 import {AssessmentService} from "@/server/services/assessment.service";
+import { MemoService } from "./memo.service"
 
-export class BlockService implements AssessmentService {
+export class BlockService implements AssessmentService, MemoService {
     async getBlocks(userId: string, date: string): Promise<BlockType[]> {
         return memoryStore.getBlocks(userId, date)
     }
