@@ -1,7 +1,9 @@
 import { NextResponse } from 'next/server'
+import { AssessmentService } from '@/server/services/assessment.service'
 import { BlockService } from '@/server/services/block.service'
 
-const blockService = new BlockService()
+// 임시로 BlockService를 통해 AssessmentService를 얻습니다
+const assessmentService: AssessmentService = new BlockService()
 
 interface RouteParams {
     userId: string
@@ -15,7 +17,7 @@ export async function GET(
     const { userId, date } = params
 
     try {
-        const assessments = await blockService.getAssessments(userId, date)
+        const assessments = await assessmentService.getAssessments(userId, date)
         return NextResponse.json(assessments)
     } catch (error) {
         console.error('Error fetching assessments:', error)
@@ -34,7 +36,7 @@ export async function POST(
 
     try {
         const { type, content } = await request.json()
-        const assessment = await blockService.addAssessment(userId, date, type, content)
+        const assessment = await assessmentService.addAssessment(userId, date, type, content)
         return NextResponse.json(assessment)
     } catch (error) {
         console.error('Error creating assessment:', error)

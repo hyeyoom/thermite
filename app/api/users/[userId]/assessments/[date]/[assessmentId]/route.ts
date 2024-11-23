@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server'
+import { AssessmentService } from '@/server/services/assessment.service'
 import { BlockService } from '@/server/services/block.service'
 
-const blockService = new BlockService()
+const assessmentService: AssessmentService = new BlockService()
 
 interface RouteParams {
     userId: string
@@ -17,7 +18,7 @@ export async function PATCH(
 
     try {
         const { content } = await request.json()
-        await blockService.updateAssessment(assessmentId, content)
+        await assessmentService.updateAssessment(assessmentId, content)
         return NextResponse.json({ success: true })
     } catch (error) {
         console.error('Error updating assessment:', error)
@@ -35,7 +36,7 @@ export async function DELETE(
     const { assessmentId } = params
 
     try {
-        await blockService.deleteAssessment(assessmentId)
+        await assessmentService.deleteAssessment(assessmentId)
         return NextResponse.json({ success: true })
     } catch (error) {
         console.error('Error deleting assessment:', error)
