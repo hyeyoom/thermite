@@ -5,6 +5,7 @@ import { useBlocks } from '@/lib/hooks/useBlocks'
 import DateHeader from "@/components/features/date-header";
 import Block from "@/components/features/block";
 import MemoSection from "@/components/features/memo-section";
+import { AlertCircle } from "lucide-react"
 
 interface DailyViewClientProps {
     userId: string
@@ -16,6 +17,8 @@ export function DailyViewClient({ userId, date }: DailyViewClientProps) {
         blocks,
         memos,
         assessments,
+        isLoading,
+        error,
         updateBlock,
         addTodo,
         toggleTodo,
@@ -38,6 +41,28 @@ export function DailyViewClient({ userId, date }: DailyViewClientProps) {
 
     const handleReflectionChange = (blockId: string, reflection: string) => {
         updateBlock(blockId, {reflection})
+    }
+
+    if (error) {
+        return (
+            <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-4">
+                <div className="flex items-center gap-2 text-destructive">
+                    <AlertCircle className="w-6 h-6" />
+                    <h2 className="text-xl font-semibold">문제가 발생했습니다</h2>
+                </div>
+                <p className="text-muted-foreground">{error.message}</p>
+            </div>
+        )
+    }
+
+    if (isLoading) {
+        return (
+            <div className="max-w-6xl mx-auto pt-12 space-y-8">
+                <div className="flex items-center justify-center min-h-[60vh]">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                </div>
+            </div>
+        )
     }
 
     return (

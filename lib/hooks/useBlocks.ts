@@ -26,51 +26,34 @@ export function useBlocks(userId: string, date: string) {
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString()
         }))
-        setBlocks(initialBlocks)
+        return initialBlocks
     }, [userId, date])
 
-    const fetchBlocks = useCallback(async () => {
-        try {
-            const data = await fetchBlocksServerAction(userId, date)
-            const existingBlocks = data || []
-
-            // 1부터 6까지의 번호 중 비어있는 번호 찾기
-            const existingNumbers = new Set(existingBlocks.map(block => block.number))
-            const missingNumbers = Array.from({length: 6}, (_, i) => i + 1)
-                .filter(num => !existingNumbers.has(num))
-                .sort((a, b) => a - b)
-
-            // 비어있는 번호에 대해 임시 블록 생성
-            const emptyBlocks: BlockType[] = missingNumbers.map(number => ({
-                id: `temp_${Date.now()}_${number}`,
-                user_id: userId,
-                date: date,
-                number: number,
-                title: '',
-                startTime: '',
-                endTime: '',
-                todos: [],
-                reflection: '',
-                created_at: new Date().toISOString(),
-                updated_at: new Date().toISOString()
-            }))
-
-            // 모든 블록을 번호순으로 정렬
-            const allBlocks = [...existingBlocks, ...emptyBlocks]
-                .sort((a, b) => a.number - b.number)
-
-            setBlocks(allBlocks)
-        } catch (err) {
-            console.error('Error fetching blocks:', err)
-            initializeBlocks()
-        } finally {
-            setIsLoading(false)
-        }
-    }, [userId, date, initializeBlocks])
-
     useEffect(() => {
-        fetchBlocks()
-    }, [userId, date, fetchBlocks])
+        const fetchData = async () => {
+            try {
+                setIsLoading(true)
+                setError(null)
+
+                const [blocksData, memosData, assessmentsData] = await Promise.all([
+                    fetchBlocksServerAction(userId, date),
+                    fetchMemosServerAction(userId, date),
+                    fetchAssessmentsServerAction(userId, date)
+                ])
+
+                setBlocks(blocksData.length ? blocksData : initializeBlocks())
+                setMemos(memosData)
+                setAssessments(assessmentsData)
+            } catch (err) {
+                console.error('Error fetching data:', err)
+                setError(err instanceof Error ? err : new Error('데이터를 불러오는데 실패했습니다'))
+            } finally {
+                setIsLoading(false)
+            }
+        }
+
+        fetchData()
+    }, [userId, date])
 
     const updateBlock = async (blockId: string, updates: Partial<BlockType>) => {
         try {
@@ -80,18 +63,15 @@ export function useBlocks(userId: string, date: string) {
                 updates.reflection?.trim()
 
             if (blockId.startsWith('temp_') && hasContent) {
-                // 임시 블록에 내용이 추가되면 실제 블록 생성
                 const newBlock = await addBlockServerAction(userId, date,
                     blocks.findIndex(b => b.id === blockId) + 1)
 
-                // 생성된 블록 업데이트
                 await updateBlockServerAction(newBlock.id, updates)
 
                 setBlocks(prevBlocks => prevBlocks.map(block =>
                     block.id === blockId ? { ...newBlock, ...updates } : block
                 ))
             } else if (!blockId.startsWith('temp_')) {
-                // 기존 블록 업데이트
                 await updateBlockServerAction(blockId, updates)
 
                 setBlocks(blocks.map(block =>
@@ -236,30 +216,6 @@ export function useBlocks(userId: string, date: string) {
             setError(err instanceof Error ? err : new Error('Failed to delete assessment'))
         }
     }
-
-    useEffect(() => {
-        const loadMemos = async () => {
-            try {
-                const data = await fetchMemosServerAction(userId, date)
-                setMemos(data)
-            } catch (err) {
-                setError(err instanceof Error ? err : new Error('Failed to fetch memos'))
-            }
-        }
-        loadMemos()
-    }, [userId, date])
-
-    useEffect(() => {
-        const loadAssessments = async () => {
-            try {
-                const data = await fetchAssessmentsServerAction(userId, date)
-                setAssessments(data)
-            } catch (err) {
-                setError(err instanceof Error ? err : new Error('Failed to fetch assessments'))
-            }
-        }
-        loadAssessments()
-    }, [userId, date])
 
     return {
         blocks,
