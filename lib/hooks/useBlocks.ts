@@ -1,7 +1,7 @@
 import {useCallback, useEffect, useState} from 'react'
 import {Assessment, BlockType, Memo} from '@/lib/types'
 import {addBlockServerAction, fetchBlocksServerAction, updateBlockServerAction} from '@/app/actions/block.actions'
-import {addTodoServerAction, toggleTodoServerAction} from '@/app/actions/todo.actions'
+import {addTodoServerAction, toggleTodoServerAction, deleteTodoServerAction} from '@/app/actions/todo.actions'
 
 export function useBlocks(userId: string, date: string) {
     const [blocks, setBlocks] = useState<BlockType[]>([])
@@ -160,15 +160,7 @@ export function useBlocks(userId: string, date: string) {
 
     const deleteTodo = async (blockId: string, todoId: string) => {
         try {
-            const response = await fetch(
-                `/api/users/${userId}/blocks/${date}/${blockId}/todos/${todoId}`,
-                {
-                    method: 'DELETE'
-                }
-            )
-            if (!response.ok) {
-                throw new Error('Failed to delete todo')
-            }
+            await deleteTodoServerAction(userId, todoId)
 
             setBlocks(blocks.map(block =>
                 block.id === blockId

@@ -8,12 +8,6 @@ interface RouteParams {
     blockId: string
 }
 
-interface SupabaseError {
-    message: string;
-    details?: string;
-    hint?: string;
-}
-
 export async function GET(
     request: Request,
     { params }: { params: RouteParams }

@@ -38,3 +38,18 @@ export async function toggleTodoServerAction(
   const todoService = await getTodoService()
   await todoService.updateTodo(todoId, { isCompleted })
 }
+
+export async function deleteTodoServerAction(
+  userId: string,
+  todoId: string
+): Promise<void> {
+  const supabase = await createSupabaseClientForServer()
+  const { data: { user } } = await supabase.auth.getUser()
+
+  if (!user || user.id !== userId) {
+    throw new Error('Unauthorized')
+  }
+
+  const todoService = await getTodoService()
+  await todoService.deleteTodo(todoId)
+}
