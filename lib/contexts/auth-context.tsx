@@ -1,6 +1,6 @@
 'use client'
 
-import {createContext, useContext, useEffect, useState, useCallback} from 'react'
+import {createContext, useCallback, useContext, useEffect, useState} from 'react'
 import {User} from '@supabase/supabase-js'
 import {createSupabaseClientForBrowser} from "@/lib/utils/supabase/client"
 
@@ -13,47 +13,58 @@ type AuthContextType = {
 const AuthContext = createContext<AuthContextType>({
     user: null,
     loading: true,
-    signOut: async () => {},
+    signOut: async () => {
+    },
 })
 
 export function AuthProvider({children}: { children: React.ReactNode }) {
     const [user, setUser] = useState<User | null>(null)
     const [loading, setLoading] = useState(true)
-    const supabase = createSupabaseClientForBrowser()
+
+    // useCallback으로 fetchUser 메모이제이션
+    const fetchUser = useCallback(async () => {
+        try {
+            const supabase = createSupabaseClientForBrowser()
+            const {data: {user}, error} = await supabase.auth.getUser()
+
+            // AuthSessionMissingError는 정상적인 로그아웃 상태를 의미하므로 무시
+            if (error && error.name !== 'AuthSessionMissingError') {
+                console.error('사용자 정보 조회 중 오류:', error)
+            }
+
+            if (user) {
+                setUser(user)
+            } else {
+                setUser(null)
+            }
+        } catch (error: unknown) {
+            if (error instanceof Error){
+                setUser(null)
+            }
+            setUser(null)
+        }
+    }, [])
 
     const signOut = useCallback(async () => {
         try {
-            const { error } = await supabase.auth.signOut()
+            const supabase = createSupabaseClientForBrowser()
+            const {error} = await supabase.auth.signOut()
             if (error) throw error
-            
-            // 로컬 상태 초기화
+
             setUser(null)
-            
-            // 페이지 새로고침 대신 리다이렉트 사용
             window.location.replace('/')
         } catch (error) {
             console.error('로그아웃 중 오류 발생:', error)
         }
     }, [])
 
-    // useCallback으로 fetchUser 메모이제이션
-    const fetchUser = useCallback(async () => {
-        try {
-            const { data: { user }, error } = await supabase.auth.getUser()
-            if (error) throw error
-            setUser(user)
-        } catch (error) {
-            console.error('Error getting user:', error)
-            setUser(null)
-        }
-    }, [supabase.auth])
-
     useEffect(() => {
         // 초기 사용자 상태 확인
         fetchUser().finally(() => setLoading(false))
 
         // 인증 상태 변경 감지
-        const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event) => {
+        const supabase = createSupabaseClientForBrowser()
+        const {data: {subscription}} = supabase.auth.onAuthStateChange(async (event) => {
             if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
                 await fetchUser()
             } else if (event === 'SIGNED_OUT') {
@@ -64,7 +75,7 @@ export function AuthProvider({children}: { children: React.ReactNode }) {
         return () => {
             subscription.unsubscribe()
         }
-    }, [supabase.auth, fetchUser])
+    }, [fetchUser])
 
     return (
         <AuthContext.Provider value={{user, loading, signOut}}>
