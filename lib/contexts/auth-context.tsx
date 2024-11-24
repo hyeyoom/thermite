@@ -1,8 +1,8 @@
 'use client'
 
-import {createContext, useContext, useEffect, useState} from 'react'
+import {createContext, useContext, useEffect, useState, useCallback} from 'react'
 import {User} from '@supabase/supabase-js'
-import {createSupabaseClientForBrowser} from "@/lib/utils/supabase/client";
+import {createSupabaseClientForBrowser} from "@/lib/utils/supabase/client"
 
 type AuthContextType = {
     user: User | null
@@ -21,21 +21,39 @@ export function AuthProvider({children}: { children: React.ReactNode }) {
     const [loading, setLoading] = useState(true)
     const supabase = createSupabaseClientForBrowser()
 
+    // useCallback으로 fetchUser 메모이제이션
+    const fetchUser = useCallback(async () => {
+        try {
+            const { data: { user }, error } = await supabase.auth.getUser()
+            if (error) throw error
+            setUser(user)
+        } catch (error) {
+            console.error('Error getting user:', error)
+            setUser(null)
+        }
+    }, [supabase.auth])
+
     useEffect(() => {
-        const {
-            data: {subscription},
-        } = supabase.auth.onAuthStateChange((_, session) => {
-            setUser(session?.user ?? null)
-            setLoading(false)
+        // 초기 사용자 상태 확인
+        fetchUser().finally(() => setLoading(false))
+
+        // 인증 상태 변경 감지
+        const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event) => {
+            if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+                await fetchUser()
+            } else if (event === 'SIGNED_OUT') {
+                setUser(null)
+            }
         })
 
         return () => {
             subscription.unsubscribe()
         }
-    }, [supabase.auth])
+    }, [supabase.auth, fetchUser])
 
     const signOut = async () => {
         await supabase.auth.signOut()
+        setUser(null)
         window.location.href = '/' // 로그아웃 후 홈페이지로 리다이렉트
     }
 
@@ -47,5 +65,9 @@ export function AuthProvider({children}: { children: React.ReactNode }) {
 }
 
 export const useAuth = () => {
-    return useContext(AuthContext)
+    const context = useContext(AuthContext)
+    if (!context) {
+        throw new Error('useAuth must be used within an AuthProvider')
+    }
+    return context
 }
