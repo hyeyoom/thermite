@@ -21,6 +21,16 @@ export function AuthProvider({children}: { children: React.ReactNode }) {
     const [loading, setLoading] = useState(true)
     const supabase = createSupabaseClientForBrowser()
 
+    const signOut = useCallback(async () => {
+        try {
+            await supabase.auth.signOut()
+            setUser(null)
+            window.location.href = '/' // 홈페이지로 리다이렉트
+        } catch (error) {
+            console.error('Error signing out:', error)
+        }
+    }, [supabase.auth])
+
     // useCallback으로 fetchUser 메모이제이션
     const fetchUser = useCallback(async () => {
         try {
@@ -51,12 +61,6 @@ export function AuthProvider({children}: { children: React.ReactNode }) {
         }
     }, [supabase.auth, fetchUser])
 
-    const signOut = async () => {
-        await supabase.auth.signOut()
-        setUser(null)
-        window.location.href = '/' // 로그아웃 후 홈페이지로 리다이렉트
-    }
-
     return (
         <AuthContext.Provider value={{user, loading, signOut}}>
             {children}
@@ -64,10 +68,4 @@ export function AuthProvider({children}: { children: React.ReactNode }) {
     )
 }
 
-export const useAuth = () => {
-    const context = useContext(AuthContext)
-    if (!context) {
-        throw new Error('useAuth must be used within an AuthProvider')
-    }
-    return context
-}
+export const useAuth = () => useContext(AuthContext)
