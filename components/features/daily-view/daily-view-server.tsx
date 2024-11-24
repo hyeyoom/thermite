@@ -15,7 +15,7 @@ export async function DailyViewServer() {
     }
 
     return (
-        <Suspense fallback={<div>로딩 중...</div>}>
+        <Suspense>
             <DailyViewClient userId={user.id} date={formattedDate} />
         </Suspense>
     )

@@ -16,8 +16,6 @@ export function DailyViewClient({ userId, date }: DailyViewClientProps) {
         blocks,
         memos,
         assessments,
-        isLoading,
-        error,
         updateBlock,
         addTodo,
         toggleTodo,
@@ -41,9 +39,6 @@ export function DailyViewClient({ userId, date }: DailyViewClientProps) {
     const handleReflectionChange = (blockId: string, reflection: string) => {
         updateBlock(blockId, {reflection})
     }
-
-    if (isLoading) return <div>로딩 중...</div>
-    if (error) return <div>에러가 발생했습니다: {error.message}</div>
 
     return (
         <div className="max-w-6xl mx-auto pt-12 space-y-8">
