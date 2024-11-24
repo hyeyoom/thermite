@@ -16,18 +16,24 @@ export async function GET(
     try {
         const blocks = await blockService.getBlocks(userId, date)
         return NextResponse.json(blocks)
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('Error fetching blocks:', error)
 
-        if (error.message === 'Unauthorized') {
+        if (error instanceof Error) {
+            if (error.message === 'Unauthorized') {
+                return NextResponse.json(
+                    { error: 'Unauthorized' },
+                    { status: 401 }
+                )
+            }
             return NextResponse.json(
-                { error: 'Unauthorized' },
-                { status: 401 }
+                { error: error.message },
+                { status: 500 }
             )
         }
 
         return NextResponse.json(
-            { error: 'Failed to fetch blocks' },
+            { error: 'An unknown error occurred' },
             { status: 500 }
         )
     }

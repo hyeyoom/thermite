@@ -17,18 +17,24 @@ export async function PATCH(
         const updates: Partial<BlockType> = await request.json()
         await blockService.updateBlock(blockId, updates)
         return NextResponse.json({ success: true })
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('Error updating block:', error)
-        
-        if (error.message === 'Unauthorized') {
+
+        if (error instanceof Error) {
+            if (error.message === 'Unauthorized') {
+                return NextResponse.json(
+                    { error: 'Unauthorized' },
+                    { status: 401 }
+                )
+            }
             return NextResponse.json(
-                { error: 'Unauthorized' },
-                { status: 401 }
+                { error: error.message },
+                { status: 500 }
             )
         }
 
         return NextResponse.json(
-            { error: 'Failed to update block' },
+            { error: 'An unknown error occurred' },
             { status: 500 }
         )
     }

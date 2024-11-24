@@ -8,6 +8,12 @@ interface RouteParams {
     blockId: string
 }
 
+interface SupabaseError {
+    message: string;
+    details?: string;
+    hint?: string;
+}
+
 export async function GET(
     request: Request,
     { params }: { params: RouteParams }
@@ -58,15 +64,23 @@ export async function POST(
         const todoService = await getTodoService()
         const todo = await todoService.addTodo(blockId, todoData)
         return NextResponse.json(todo)
-    } catch (error: any) {
-        console.error('Error creating todo:', {
-            error,
-            message: error.message,
-            details: error.details,
-            hint: error.hint
-        })
+    } catch (error: unknown) {
+        console.error('Error creating todo:', error)
+
+        if (error instanceof Error) {
+            const supaError = error as SupabaseError
+            return NextResponse.json(
+                { 
+                    error: supaError.message,
+                    details: supaError.details,
+                    hint: supaError.hint
+                },
+                { status: 500 }
+            )
+        }
+
         return NextResponse.json(
-            { error: error.message || 'Failed to create todo' },
+            { error: 'An unknown error occurred' },
             { status: 500 }
         )
     }
