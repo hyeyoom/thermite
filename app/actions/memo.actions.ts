@@ -49,4 +49,19 @@ export async function updateMemoServerAction(
 
   const memoService = await getMemoService()
   await memoService.updateMemo(memoId, content)
+}
+
+export async function deleteMemoServerAction(
+  userId: string,
+  memoId: string
+): Promise<void> {
+  const supabase = await createSupabaseClientForServer()
+  const { data: { user } } = await supabase.auth.getUser()
+
+  if (!user || user.id !== userId) {
+    throw new Error('Unauthorized')
+  }
+
+  const memoService = await getMemoService()
+  await memoService.deleteMemo(memoId)
 } 
