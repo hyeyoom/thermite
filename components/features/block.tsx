@@ -1,9 +1,9 @@
 'use client'
 
-import React, {useCallback, useEffect, useState} from 'react'
+import React from 'react'
 import {Card} from '@/components/ui/card'
 import {Textarea} from '@/components/ui/textarea'
-import {BlockProps} from "@/lib/types";
+import {BlockProps} from "@/lib/types"
 import TodoList from './todo-list'
 import TimeRangeDialog from './time-range-dialog'
 
@@ -24,8 +24,6 @@ const Block = ({
     const [isTimeDialogOpen, setIsTimeDialogOpen] = React.useState(false)
     const [isEditingTitle, setIsEditingTitle] = React.useState(false)
     const [localTitle, setLocalTitle] = React.useState(title)
-    const [localReflection, setLocalReflection] = useState(reflection || '')
-
 
     const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setLocalTitle(e.target.value)
@@ -37,28 +35,18 @@ const Block = ({
         }
     }
 
-    useEffect(() => {
-        setLocalTitle(title)
-    }, [title])
-
-    useEffect(() => {
-        setLocalReflection(reflection || '')
-    }, [reflection])
-
-    const debouncedReflectionChange = useCallback(
-        (value: string) => {
+    const handleReflectionSave = (e: React.FocusEvent<HTMLTextAreaElement>) => {
+        const value = e.currentTarget.value
+        if (value.trim() !== reflection) {
             onReflectionChange(value)
-        },
-        [onReflectionChange]
-    )
-
-    const handleReflectionChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
-        const newValue = e.target.value
-        setLocalReflection(newValue)
-        if (newValue.trim()) {
-            debouncedReflectionChange(newValue)
         }
-    }, [debouncedReflectionChange])
+    }
+
+    const handleReflectionKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+        if (e.key === 'Escape') {
+            e.currentTarget.blur()
+        }
+    }
 
     return (
         <>
@@ -120,13 +108,14 @@ const Block = ({
                         onDeleteTodo={onDeleteTodo}
                     />
 
-                    {/* 회고 메모 */}
+                    {/* 회고 메모 - Enter로 개행 가능하도록 수정 */}
                     <div className="flex-none lg:w-64">
                         <Textarea
-                            value={localReflection}
-                            onChange={handleReflectionChange}
+                            defaultValue={reflection}
+                            onBlur={handleReflectionSave}
+                            onKeyDown={handleReflectionKeyDown}
                             className="w-full h-24 resize-none border-none focus:ring-0 hover:bg-muted/50 transition-colors"
-                            placeholder="회고 메모..."
+                            placeholder="회고를 입력해주세요!"
                         />
                     </div>
                 </div>
