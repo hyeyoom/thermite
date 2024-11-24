@@ -9,6 +9,47 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      block_todos: {
+        Row: {
+          block_id: string | null
+          content: string
+          created_at: string
+          deleted_at: string | null
+          id: string
+          is_completed: boolean
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          block_id?: string | null
+          content?: string
+          created_at?: string
+          deleted_at?: string | null
+          id?: string
+          is_completed?: boolean
+          updated_at?: string
+          user_id?: string
+        }
+        Update: {
+          block_id?: string | null
+          content?: string
+          created_at?: string
+          deleted_at?: string | null
+          id?: string
+          is_completed?: boolean
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "\btodos_block_id_fkey"
+            columns: ["block_id"]
+            isOneToOne: false
+            referencedRelation: "blocks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       blocks: {
         Row: {
           block_number: number

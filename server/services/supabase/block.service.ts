@@ -11,14 +11,27 @@ export class SupabaseBlockService implements BlockService {
             throw new Error('Unauthorized')
         }
 
+        console.log('Fetching blocks with todos for date:', date)
+
         const { data, error } = await supabase
             .from('blocks')
-            .select('*')
+            .select(`
+                *,
+                block_todos!inner (
+                    *
+                )
+            `)
             .eq('user_id', user.id)
             .eq('date', date)
+            .is('block_todos.deleted_at', null)
             .order('block_number', { ascending: true })
 
-        if (error) throw error
+        if (error) {
+            console.error('Error fetching blocks:', error)
+            throw error
+        }
+
+        console.log('Found blocks with todos:', data)
 
         return (data || []).map(block => ({
             id: block.id,
@@ -28,7 +41,14 @@ export class SupabaseBlockService implements BlockService {
             title: block.block_title,
             startTime: block.start_time,
             endTime: block.end_time,
-            todos: [],
+            todos: (block.block_todos || []).map(todo => ({
+                id: todo.id,
+                block_id: todo.block_id,
+                content: todo.content,
+                isCompleted: todo.is_completed,
+                created_at: todo.created_at,
+                updated_at: todo.updated_at
+            })),
             reflection: block.reflection,
             created_at: block.created_at,
             updated_at: block.updated_at
