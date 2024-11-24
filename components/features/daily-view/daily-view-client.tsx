@@ -1,17 +1,17 @@
 'use client'
 
-import {useBlocks} from '@/lib/hooks/useBlocks'
+import React from 'react'
+import { useBlocks } from '@/lib/hooks/useBlocks'
 import DateHeader from "@/components/features/date-header";
 import Block from "@/components/features/block";
 import MemoSection from "@/components/features/memo-section";
-import React from 'react'
 
 interface DailyViewClientProps {
     userId: string
     date: string
 }
 
-export function DailyViewClient({userId, date}: DailyViewClientProps) {
+export function DailyViewClient({ userId, date }: DailyViewClientProps) {
     const {
         blocks,
         memos,
