@@ -2,7 +2,7 @@ import {useCallback, useEffect, useState} from 'react'
 import {Assessment, BlockType, Memo} from '@/lib/types'
 import {addBlockServerAction, fetchBlocksServerAction, updateBlockServerAction} from '@/app/actions/block.actions'
 import {addTodoServerAction, toggleTodoServerAction, deleteTodoServerAction} from '@/app/actions/todo.actions'
-import {fetchMemosServerAction} from '@/app/actions/memo.actions'
+import {fetchMemosServerAction, addMemoServerAction} from '@/app/actions/memo.actions'
 
 export function useBlocks(userId: string, date: string) {
     const [blocks, setBlocks] = useState<BlockType[]>([])
@@ -178,18 +178,7 @@ export function useBlocks(userId: string, date: string) {
 
     const addMemo = async (content: string) => {
         try {
-            const response = await fetch(
-                `/api/users/${userId}/memos/${date}`,
-                {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({content})
-                }
-            )
-            if (!response.ok) {
-                throw new Error('Failed to add memo')
-            }
-            const newMemo = await response.json()
+            const newMemo = await addMemoServerAction(userId, date, content)
             setMemos([...memos, newMemo])
         } catch (err) {
             setError(err instanceof Error ? err : new Error('Failed to add memo'))
