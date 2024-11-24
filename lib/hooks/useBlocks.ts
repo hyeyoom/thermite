@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { Assessment, BlockType, Memo } from '@/lib/types'
-import { fetchBlocksServerAction } from '@/app/actions/block.actions'
+import { fetchBlocksServerAction, addBlockServerAction } from '@/app/actions/block.actions'
 
 export function useBlocks(userId: string, date: string) {
   const [blocks, setBlocks] = useState<BlockType[]>([])
@@ -68,15 +68,7 @@ export function useBlocks(userId: string, date: string) {
     if (blocks.length >= 6) return
 
     try {
-      const response = await fetch(`/api/users/${userId}/blocks/${date}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ number: blocks.length + 1 })
-      })
-      if (!response.ok) {
-        throw new Error('Failed to add block')
-      }
-      const newBlock = await response.json()
+      const newBlock = await addBlockServerAction(userId, date, blocks.length + 1)
       setBlocks([...blocks, newBlock])
     } catch (err) {
       setError(err instanceof Error ? err : new Error('Failed to add block'))
