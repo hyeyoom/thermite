@@ -3,7 +3,7 @@ import {Assessment, BlockType, Memo} from '@/lib/types'
 import {addBlockServerAction, fetchBlocksServerAction, updateBlockServerAction} from '@/app/actions/block.actions'
 import {addTodoServerAction, toggleTodoServerAction, deleteTodoServerAction} from '@/app/actions/todo.actions'
 import {fetchMemosServerAction, addMemoServerAction, updateMemoServerAction, deleteMemoServerAction} from '@/app/actions/memo.actions'
-import {fetchAssessmentsServerAction, addAssessmentServerAction, updateAssessmentServerAction} from '@/app/actions/assessment.actions'
+import {fetchAssessmentsServerAction, addAssessmentServerAction, updateAssessmentServerAction, deleteAssessmentServerAction} from '@/app/actions/assessment.actions'
 
 export function useBlocks(userId: string, date: string) {
     const [blocks, setBlocks] = useState<BlockType[]>([])
@@ -230,15 +230,7 @@ export function useBlocks(userId: string, date: string) {
 
     const deleteAssessment = async (assessmentId: string) => {
         try {
-            const response = await fetch(
-                `/api/users/${userId}/assessments/${date}/${assessmentId}`,
-                {
-                    method: 'DELETE'
-                }
-            )
-            if (!response.ok) {
-                throw new Error('Failed to delete assessment')
-            }
+            await deleteAssessmentServerAction(userId, assessmentId)
             setAssessments(assessments.filter(assessment => assessment.id !== assessmentId))
         } catch (err) {
             setError(err instanceof Error ? err : new Error('Failed to delete assessment'))
