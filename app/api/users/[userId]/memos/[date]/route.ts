@@ -1,8 +1,6 @@
 import { NextResponse } from 'next/server'
-import { MemoService } from '@/server/services/memo.service'
-import { BlockServiceImpl } from '@/server/services/legacy.block.service'
-
-const memoService: MemoService = new BlockServiceImpl()
+import { getMemoService } from '@/server/services/factories/memo.service.factory'
+import { createSupabaseClientForServer } from '@/lib/utils/supabase/server'
 
 interface RouteParams {
     userId: string
@@ -14,11 +12,22 @@ export async function GET(
     { params }: { params: RouteParams }
 ) {
     const { userId, date } = params
-
+    
     try {
+        const supabase = await createSupabaseClientForServer()
+        const { data: { user } } = await supabase.auth.getUser()
+        
+        if (!user || user.id !== userId) {
+            return NextResponse.json(
+                { error: 'Unauthorized' },
+                { status: 401 }
+            )
+        }
+
+        const memoService = await getMemoService()
         const memos = await memoService.getMemos(userId, date)
         return NextResponse.json(memos)
-    } catch (error) {
+    } catch (error: unknown) {
         console.error('Error fetching memos:', error)
         return NextResponse.json(
             { error: 'Failed to fetch memos' },
@@ -32,12 +41,23 @@ export async function POST(
     { params }: { params: RouteParams }
 ) {
     const { userId, date } = params
-
+    
     try {
-        const memoData = await request.json()
-        const memo = await memoService.createMemo(userId, { ...memoData, date })
+        const supabase = await createSupabaseClientForServer()
+        const { data: { user } } = await supabase.auth.getUser()
+        
+        if (!user || user.id !== userId) {
+            return NextResponse.json(
+                { error: 'Unauthorized' },
+                { status: 401 }
+            )
+        }
+
+        const { content } = await request.json()
+        const memoService = await getMemoService()
+        const memo = await memoService.addMemo(userId, date, content)
         return NextResponse.json(memo)
-    } catch (error) {
+    } catch (error: unknown) {
         console.error('Error creating memo:', error)
         return NextResponse.json(
             { error: 'Failed to create memo' },

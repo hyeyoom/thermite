@@ -150,18 +150,22 @@ class MemoryStore {
         return this.memos.get(key) || []
     }
 
-    addMemo(memo: Memo): void {
-        const key = `${memo.user_id}_${memo.date}`
-        const memos = this.getMemos(memo.user_id, memo.date)
+    addMemo(userId: string, date: string, memo: Memo): void {
+        const key = `${userId}_${date}`
+        const memos = this.memos.get(key) || []
         this.memos.set(key, [...memos, memo])
         this.saveToStorage()
     }
 
-    updateMemo(memoId: string, updates: Partial<Memo>): void {
+    updateMemo(memoId: string, updates: { content: string }): void {
         this.memos.forEach((memos, key) => {
             const updatedMemos = memos.map(memo =>
                 memo.id === memoId
-                    ? { ...memo, ...updates, updated_at: new Date().toISOString() }
+                    ? { 
+                        ...memo, 
+                        content: updates.content,
+                        updated_at: new Date().toISOString() 
+                    }
                     : memo
             )
             this.memos.set(key, updatedMemos)

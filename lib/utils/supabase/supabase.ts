@@ -9,6 +9,39 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      block_memos: {
+        Row: {
+          block_id: string
+          content: string
+          created_at: string
+          date: string
+          deleted_at: string | null
+          id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          block_id?: string
+          content?: string
+          created_at?: string
+          date: string
+          deleted_at?: string | null
+          id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Update: {
+          block_id?: string
+          content?: string
+          created_at?: string
+          date?: string
+          deleted_at?: string | null
+          id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       block_todos: {
         Row: {
           block_id: string | null

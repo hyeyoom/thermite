@@ -88,22 +88,21 @@ export class BlockServiceImpl implements BlockService, AssessmentService, MemoSe
         return memoryStore.getMemos(userId, date)
     }
 
-    async createMemo(userId: string, memoData: Partial<Memo>): Promise<Memo> {
+    async addMemo(userId: string, date: string, content: string): Promise<Memo> {
         const newMemo: Memo = {
             id: Date.now().toString(),
             user_id: userId,
-            date: memoData.date || new Date().toISOString().split('T')[0],
-            content: memoData.content || '',
+            date: date,
+            content: content,
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString()
         }
-
-        memoryStore.addMemo(newMemo)
+        memoryStore.addMemo(userId, date, newMemo)
         return newMemo
     }
 
-    async updateMemo(memoId: string, updates: Partial<Memo>): Promise<void> {
-        memoryStore.updateMemo(memoId, updates)
+    async updateMemo(memoId: string, content: string): Promise<void> {
+        memoryStore.updateMemo(memoId, { content })
     }
 
     async deleteMemo(memoId: string): Promise<void> {
