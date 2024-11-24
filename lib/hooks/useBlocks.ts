@@ -29,29 +29,34 @@ export function useBlocks(userId: string, date: string) {
   const fetchBlocks = useCallback(async () => {
     try {
       const data = await fetchBlocksServerAction(userId, date)
-
       const existingBlocks = data || []
-      const emptyBlocksNeeded = 6 - existingBlocks.length
 
-      if (emptyBlocksNeeded > 0) {
-        const emptyBlocks: BlockType[] = Array.from({ length: emptyBlocksNeeded }, (_, index) => ({
-          id: `temp_${Date.now()}_${existingBlocks.length + index}`,
-          user_id: userId,
-          date: date,
-          number: existingBlocks.length + index + 1,
-          title: '',
-          startTime: '',
-          endTime: '',
-          todos: [],
-          reflection: '',
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
-        }))
+      // 1부터 6까지의 번호 중 비어있는 번호 찾기
+      const existingNumbers = new Set(existingBlocks.map(block => block.number))
+      const missingNumbers = Array.from({ length: 6 }, (_, i) => i + 1)
+          .filter(num => !existingNumbers.has(num))
+          .sort((a, b) => a - b)
 
-        setBlocks([...existingBlocks, ...emptyBlocks])
-      } else {
-        setBlocks(existingBlocks)
-      }
+      // 비어있는 번호에 대해 임시 블록 생성
+      const emptyBlocks: BlockType[] = missingNumbers.map(number => ({
+        id: `temp_${Date.now()}_${number}`,
+        user_id: userId,
+        date: date,
+        number: number,
+        title: '',
+        startTime: '',
+        endTime: '',
+        todos: [],
+        reflection: '',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      }))
+
+      // 모든 블록을 번호순으로 정렬
+      const allBlocks = [...existingBlocks, ...emptyBlocks]
+          .sort((a, b) => a.number - b.number)
+
+      setBlocks(allBlocks)
     } catch (err) {
       console.error('Error fetching blocks:', err)
       initializeBlocks()
