@@ -23,13 +23,18 @@ export function AuthProvider({children}: { children: React.ReactNode }) {
 
     const signOut = useCallback(async () => {
         try {
-            await supabase.auth.signOut()
+            const { error } = await supabase.auth.signOut()
+            if (error) throw error
+            
+            // 로컬 상태 초기화
             setUser(null)
-            window.location.href = '/' // 홈페이지로 리다이렉트
+            
+            // 페이지 새로고침 대신 리다이렉트 사용
+            window.location.replace('/')
         } catch (error) {
-            console.error('Error signing out:', error)
+            console.error('로그아웃 중 오류 발생:', error)
         }
-    }, [supabase.auth])
+    }, [])
 
     // useCallback으로 fetchUser 메모이제이션
     const fetchUser = useCallback(async () => {
