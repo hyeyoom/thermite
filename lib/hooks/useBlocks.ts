@@ -2,7 +2,7 @@ import {useCallback, useEffect, useState} from 'react'
 import {Assessment, BlockType, Memo} from '@/lib/types'
 import {addBlockServerAction, fetchBlocksServerAction, updateBlockServerAction} from '@/app/actions/block.actions'
 import {addTodoServerAction, toggleTodoServerAction, deleteTodoServerAction} from '@/app/actions/todo.actions'
-import {fetchMemosServerAction, addMemoServerAction} from '@/app/actions/memo.actions'
+import {fetchMemosServerAction, addMemoServerAction, updateMemoServerAction} from '@/app/actions/memo.actions'
 
 export function useBlocks(userId: string, date: string) {
     const [blocks, setBlocks] = useState<BlockType[]>([])
@@ -187,17 +187,7 @@ export function useBlocks(userId: string, date: string) {
 
     const updateMemo = async (memoId: string, content: string) => {
         try {
-            const response = await fetch(
-                `/api/users/${userId}/memos/${date}/${memoId}`,
-                {
-                    method: 'PATCH',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({content})
-                }
-            )
-            if (!response.ok) {
-                throw new Error('Failed to update memo')
-            }
+            await updateMemoServerAction(userId, memoId, content)
             setMemos(memos.map(memo =>
                 memo.id === memoId ? {...memo, content} : memo
             ))

@@ -33,4 +33,20 @@ export async function addMemoServerAction(
 
   const memoService = await getMemoService()
   return memoService.addMemo(userId, date, content)
+}
+
+export async function updateMemoServerAction(
+  userId: string,
+  memoId: string,
+  content: string
+): Promise<void> {
+  const supabase = await createSupabaseClientForServer()
+  const { data: { user } } = await supabase.auth.getUser()
+
+  if (!user || user.id !== userId) {
+    throw new Error('Unauthorized')
+  }
+
+  const memoService = await getMemoService()
+  await memoService.updateMemo(memoId, content)
 } 
