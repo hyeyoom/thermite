@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { Assessment, BlockType, Memo } from '@/lib/types'
+import { fetchBlocksServerAction } from '@/app/actions/block.actions'
 
 export function useBlocks(userId: string, date: string) {
   const [blocks, setBlocks] = useState<BlockType[]>([])
@@ -27,15 +28,11 @@ export function useBlocks(userId: string, date: string) {
 
   const fetchBlocks = useCallback(async () => {
     try {
-      const response = await fetch(`/api/users/${userId}/blocks/${date}`)
-      if (!response.ok) {
-        throw new Error('Failed to fetch blocks')
-      }
-      const data = await response.json()
-      
+      const data = await fetchBlocksServerAction(userId, date)
+
       const existingBlocks = data || []
       const emptyBlocksNeeded = 6 - existingBlocks.length
-      
+
       if (emptyBlocksNeeded > 0) {
         const emptyBlocks: BlockType[] = Array.from({ length: emptyBlocksNeeded }, (_, index) => ({
           id: `temp_${Date.now()}_${existingBlocks.length + index}`,
@@ -50,7 +47,7 @@ export function useBlocks(userId: string, date: string) {
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString()
         }))
-        
+
         setBlocks([...existingBlocks, ...emptyBlocks])
       } else {
         setBlocks(existingBlocks)
@@ -88,24 +85,24 @@ export function useBlocks(userId: string, date: string) {
 
   const updateBlock = async (blockId: string, updates: Partial<BlockType>) => {
     try {
-      const hasContent = updates.title?.trim() || 
-                        updates.startTime || 
-                        updates.endTime || 
+      const hasContent = updates.title?.trim() ||
+                        updates.startTime ||
+                        updates.endTime ||
                         updates.reflection?.trim()
 
       if (blockId.startsWith('temp_') && hasContent) {
         const response = await fetch(`/api/users/${userId}/blocks/${date}`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ 
-            ...updates, 
-            number: blocks.findIndex(b => b.id === blockId) + 1 
+          body: JSON.stringify({
+            ...updates,
+            number: blocks.findIndex(b => b.id === blockId) + 1
           })
         })
         if (!response.ok) throw new Error('Failed to create block')
         const newBlock = await response.json()
-        
-        const updatedBlocks = blocks.map(block => 
+
+        const updatedBlocks = blocks.map(block =>
           block.id === blockId ? newBlock : block
         )
         setBlocks(updatedBlocks)
@@ -116,7 +113,7 @@ export function useBlocks(userId: string, date: string) {
           body: JSON.stringify(updates)
         })
         if (!response.ok) throw new Error('Failed to update block')
-        
+
         setBlocks(blocks.map(block =>
           block.id === blockId ? { ...block, ...updates } : block
         ))
