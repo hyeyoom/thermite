@@ -1,6 +1,7 @@
 import {useCallback, useEffect, useState} from 'react'
 import {Assessment, BlockType, Memo} from '@/lib/types'
 import {addBlockServerAction, fetchBlocksServerAction, updateBlockServerAction} from '@/app/actions/block.actions'
+import {addTodoServerAction} from '@/app/actions/todo.actions'
 
 export function useBlocks(userId: string, date: string) {
     const [blocks, setBlocks] = useState<BlockType[]>([])
@@ -121,25 +122,11 @@ export function useBlocks(userId: string, date: string) {
 
     const addTodo = async (blockId: string, content: string) => {
         try {
-            const response = await fetch(
-                `/api/users/${userId}/blocks/${date}/${blockId}/todos`,
-                {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({
-                        content,
-                        isCompleted: false
-                    })
-                }
-            )
-            if (!response.ok) {
-                throw new Error('Failed to add todo')
-            }
-            const newTodo = await response.json()
+            const newTodo = await addTodoServerAction(userId, blockId, content)
 
             setBlocks(blocks.map(block =>
                 block.id === blockId
-                    ? {...block, todos: [...block.todos, newTodo]}
+                    ? { ...block, todos: [...block.todos, newTodo] }
                     : block
             ))
         } catch (err) {

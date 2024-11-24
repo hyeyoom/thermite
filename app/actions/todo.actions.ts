@@ -1,0 +1,24 @@
+'use server'
+
+import { getTodoService } from '@/server/services/factories/todo.service.factory'
+import { createSupabaseClientForServer } from '@/lib/utils/supabase/server'
+import { Todo } from '@/lib/types'
+
+export async function addTodoServerAction(
+  userId: string,
+  blockId: string,
+  content: string
+): Promise<Todo> {
+  const supabase = await createSupabaseClientForServer()
+  const { data: { user } } = await supabase.auth.getUser()
+
+  if (!user || user.id !== userId) {
+    throw new Error('Unauthorized')
+  }
+
+  const todoService = await getTodoService()
+  return todoService.addTodo(blockId, {
+    content,
+    isCompleted: false
+  })
+}
