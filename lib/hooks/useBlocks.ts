@@ -1,6 +1,6 @@
 import {useCallback, useEffect, useState} from 'react'
 import {Assessment, BlockType, Memo} from '@/lib/types'
-import {addBlockServerAction, fetchBlocksServerAction} from '@/app/actions/block.actions'
+import {addBlockServerAction, fetchBlocksServerAction, updateBlockServerAction} from '@/app/actions/block.actions'
 
 export function useBlocks(userId: string, date: string) {
     const [blocks, setBlocks] = useState<BlockType[]>([])
@@ -82,26 +82,17 @@ export function useBlocks(userId: string, date: string) {
                     blocks.findIndex(b => b.id === blockId) + 1)
 
                 // 생성된 블록 업데이트
-                await fetch(`/api/users/${userId}/blocks/${date}/${newBlock.id}`, {
-                    method: 'PATCH',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify(updates)
-                })
+                await updateBlockServerAction(newBlock.id, updates)
 
                 setBlocks(prevBlocks => prevBlocks.map(block =>
-                    block.id === blockId ? {...newBlock, ...updates} : block
+                    block.id === blockId ? { ...newBlock, ...updates } : block
                 ))
             } else if (!blockId.startsWith('temp_')) {
                 // 기존 블록 업데이트
-                const response = await fetch(`/api/users/${userId}/blocks/${date}/${blockId}`, {
-                    method: 'PATCH',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify(updates)
-                })
-                if (!response.ok) throw new Error('Failed to update block')
+                await updateBlockServerAction(blockId, updates)
 
                 setBlocks(blocks.map(block =>
-                    block.id === blockId ? {...block, ...updates} : block
+                    block.id === blockId ? { ...block, ...updates } : block
                 ))
             }
         } catch (err) {

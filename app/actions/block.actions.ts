@@ -30,3 +30,18 @@ export async function addBlockServerAction(userId: string, date: string, blockNu
     number: blockNumber
   })
 }
+
+export async function updateBlockServerAction(
+  blockId: string, 
+  updates: Partial<BlockType>
+): Promise<void> {
+  const supabase = await createSupabaseClientForServer()
+  const { data: { user } } = await supabase.auth.getUser()
+
+  if (!user) {
+    throw new Error('Unauthorized')
+  }
+
+  const blockService = await getBlockService()
+  await blockService.updateBlock(blockId, updates)
+}
