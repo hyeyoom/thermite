@@ -1,7 +1,7 @@
 import {useCallback, useEffect, useState} from 'react'
 import {Assessment, BlockType, Memo} from '@/lib/types'
 import {addBlockServerAction, fetchBlocksServerAction, updateBlockServerAction} from '@/app/actions/block.actions'
-import {addTodoServerAction} from '@/app/actions/todo.actions'
+import {addTodoServerAction, toggleTodoServerAction} from '@/app/actions/todo.actions'
 
 export function useBlocks(userId: string, date: string) {
     const [blocks, setBlocks] = useState<BlockType[]>([])
@@ -139,19 +139,7 @@ export function useBlocks(userId: string, date: string) {
             const block = blocks.find(b => b.id === blockId)!
             const todo = block.todos.find(t => t.id === todoId)!
 
-            const response = await fetch(
-                `/api/users/${userId}/blocks/${date}/${blockId}/todos/${todoId}`,
-                {
-                    method: 'PATCH',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({
-                        isCompleted: !todo.isCompleted
-                    })
-                }
-            )
-            if (!response.ok) {
-                throw new Error('Failed to toggle todo')
-            }
+            await toggleTodoServerAction(userId, todoId, !todo.isCompleted)
 
             setBlocks(blocks.map(block =>
                 block.id === blockId
@@ -159,7 +147,7 @@ export function useBlocks(userId: string, date: string) {
                         ...block,
                         todos: block.todos.map(todo =>
                             todo.id === todoId
-                                ? {...todo, isCompleted: !todo.isCompleted}
+                                ? { ...todo, isCompleted: !todo.isCompleted }
                                 : todo
                         )
                     }

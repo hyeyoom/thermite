@@ -22,3 +22,19 @@ export async function addTodoServerAction(
     isCompleted: false
   })
 }
+
+export async function toggleTodoServerAction(
+  userId: string,
+  todoId: string,
+  isCompleted: boolean
+): Promise<void> {
+  const supabase = await createSupabaseClientForServer()
+  const { data: { user } } = await supabase.auth.getUser()
+
+  if (!user || user.id !== userId) {
+    throw new Error('Unauthorized')
+  }
+
+  const todoService = await getTodoService()
+  await todoService.updateTodo(todoId, { isCompleted })
+}

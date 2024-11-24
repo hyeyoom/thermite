@@ -9,36 +9,6 @@ interface RouteParams {
     todoId: string
 }
 
-export async function PATCH(
-    request: Request,
-    { params }: { params: RouteParams }
-) {
-    const { userId, todoId } = params
-
-    try {
-        const supabase = await createSupabaseClientForServer()
-        const { data: { user } } = await supabase.auth.getUser()
-        
-        if (!user || user.id !== userId) {
-            return NextResponse.json(
-                { error: 'Unauthorized' },
-                { status: 401 }
-            )
-        }
-
-        const updates = await request.json()
-        const todoService = await getTodoService()
-        await todoService.updateTodo(todoId, updates)
-        return NextResponse.json({ success: true })
-    } catch (error) {
-        console.error('Error updating todo:', error)
-        return NextResponse.json(
-            { error: 'Failed to update todo' },
-            { status: 500 }
-        )
-    }
-}
-
 export async function DELETE(
     request: Request,
     { params }: { params: RouteParams }
