@@ -1,9 +1,7 @@
 import { NextResponse } from 'next/server'
-import { AssessmentService } from '@/server/services/assessment.service'
-import { BlockServiceImpl } from '@/server/services/legacy.block.service'
-
-// 임시로 BlockService를 통해 AssessmentService를 얻습니다
-const assessmentService: AssessmentService = new BlockServiceImpl()
+import { getAssessmentService } from '@/server/services/factories/assessment.service.factory'
+import { createSupabaseClientForServer } from '@/lib/utils/supabase/server'
+import { AssessmentType } from '@/server/services/assessment.service'
 
 interface RouteParams {
     userId: string
@@ -15,11 +13,22 @@ export async function GET(
     { params }: { params: RouteParams }
 ) {
     const { userId, date } = params
-
+    
     try {
+        const supabase = await createSupabaseClientForServer()
+        const { data: { user } } = await supabase.auth.getUser()
+        
+        if (!user || user.id !== userId) {
+            return NextResponse.json(
+                { error: 'Unauthorized' },
+                { status: 401 }
+            )
+        }
+
+        const assessmentService = await getAssessmentService()
         const assessments = await assessmentService.getAssessments(userId, date)
         return NextResponse.json(assessments)
-    } catch (error) {
+    } catch (error: unknown) {
         console.error('Error fetching assessments:', error)
         return NextResponse.json(
             { error: 'Failed to fetch assessments' },
@@ -33,12 +42,23 @@ export async function POST(
     { params }: { params: RouteParams }
 ) {
     const { userId, date } = params
-
+    
     try {
+        const supabase = await createSupabaseClientForServer()
+        const { data: { user } } = await supabase.auth.getUser()
+        
+        if (!user || user.id !== userId) {
+            return NextResponse.json(
+                { error: 'Unauthorized' },
+                { status: 401 }
+            )
+        }
+
         const { type, content } = await request.json()
-        const assessment = await assessmentService.addAssessment(userId, date, type, content)
+        const assessmentService = await getAssessmentService()
+        const assessment = await assessmentService.addAssessment(userId, date, type as AssessmentType, content)
         return NextResponse.json(assessment)
-    } catch (error) {
+    } catch (error: unknown) {
         console.error('Error creating assessment:', error)
         return NextResponse.json(
             { error: 'Failed to create assessment' },

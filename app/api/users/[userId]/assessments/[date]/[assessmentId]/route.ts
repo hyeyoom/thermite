@@ -1,8 +1,6 @@
 import { NextResponse } from 'next/server'
-import { AssessmentService } from '@/server/services/assessment.service'
-import { BlockServiceImpl } from '@/server/services/legacy.block.service'
-
-const assessmentService: AssessmentService = new BlockServiceImpl()
+import { getAssessmentService } from '@/server/services/factories/assessment.service.factory'
+import { createSupabaseClientForServer } from '@/lib/utils/supabase/server'
 
 interface RouteParams {
     userId: string
@@ -14,13 +12,24 @@ export async function PATCH(
     request: Request,
     { params }: { params: RouteParams }
 ) {
-    const { assessmentId } = params
-
+    const { userId, assessmentId } = params
+    
     try {
+        const supabase = await createSupabaseClientForServer()
+        const { data: { user } } = await supabase.auth.getUser()
+        
+        if (!user || user.id !== userId) {
+            return NextResponse.json(
+                { error: 'Unauthorized' },
+                { status: 401 }
+            )
+        }
+
         const { content } = await request.json()
+        const assessmentService = await getAssessmentService()
         await assessmentService.updateAssessment(assessmentId, content)
         return NextResponse.json({ success: true })
-    } catch (error) {
+    } catch (error: unknown) {
         console.error('Error updating assessment:', error)
         return NextResponse.json(
             { error: 'Failed to update assessment' },
@@ -33,12 +42,23 @@ export async function DELETE(
     request: Request,
     { params }: { params: RouteParams }
 ) {
-    const { assessmentId } = params
-
+    const { userId, assessmentId } = params
+    
     try {
+        const supabase = await createSupabaseClientForServer()
+        const { data: { user } } = await supabase.auth.getUser()
+        
+        if (!user || user.id !== userId) {
+            return NextResponse.json(
+                { error: 'Unauthorized' },
+                { status: 401 }
+            )
+        }
+
+        const assessmentService = await getAssessmentService()
         await assessmentService.deleteAssessment(assessmentId)
         return NextResponse.json({ success: true })
-    } catch (error) {
+    } catch (error: unknown) {
         console.error('Error deleting assessment:', error)
         return NextResponse.json(
             { error: 'Failed to delete assessment' },

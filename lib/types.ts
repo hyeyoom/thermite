@@ -60,4 +60,6 @@ export interface Assessment {
     id: string
     type: 'good' | 'bad' | 'next'
     content: string
+    created_at: string
+    updated_at: string
 }
