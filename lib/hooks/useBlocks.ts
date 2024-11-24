@@ -2,6 +2,7 @@ import {useCallback, useEffect, useState} from 'react'
 import {Assessment, BlockType, Memo} from '@/lib/types'
 import {addBlockServerAction, fetchBlocksServerAction, updateBlockServerAction} from '@/app/actions/block.actions'
 import {addTodoServerAction, toggleTodoServerAction, deleteTodoServerAction} from '@/app/actions/todo.actions'
+import {fetchMemosServerAction} from '@/app/actions/memo.actions'
 
 export function useBlocks(userId: string, date: string) {
     const [blocks, setBlocks] = useState<BlockType[]>([])
@@ -296,11 +297,7 @@ export function useBlocks(userId: string, date: string) {
     useEffect(() => {
         const loadMemos = async () => {
             try {
-                const response = await fetch(`/api/users/${userId}/memos/${date}`)
-                if (!response.ok) {
-                    throw new Error('Failed to fetch memos')
-                }
-                const data = await response.json()
+                const data = await fetchMemosServerAction(userId, date)
                 setMemos(data)
             } catch (err) {
                 setError(err instanceof Error ? err : new Error('Failed to fetch memos'))
