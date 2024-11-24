@@ -34,4 +34,20 @@ export async function addAssessmentServerAction(
 
   const assessmentService = await getAssessmentService()
   return assessmentService.addAssessment(userId, date, type, content)
+}
+
+export async function updateAssessmentServerAction(
+  userId: string,
+  assessmentId: string,
+  content: string
+): Promise<void> {
+  const supabase = await createSupabaseClientForServer()
+  const { data: { user } } = await supabase.auth.getUser()
+
+  if (!user || user.id !== userId) {
+    throw new Error('Unauthorized')
+  }
+
+  const assessmentService = await getAssessmentService()
+  await assessmentService.updateAssessment(assessmentId, content)
 } 

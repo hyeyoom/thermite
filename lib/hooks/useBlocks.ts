@@ -3,7 +3,7 @@ import {Assessment, BlockType, Memo} from '@/lib/types'
 import {addBlockServerAction, fetchBlocksServerAction, updateBlockServerAction} from '@/app/actions/block.actions'
 import {addTodoServerAction, toggleTodoServerAction, deleteTodoServerAction} from '@/app/actions/todo.actions'
 import {fetchMemosServerAction, addMemoServerAction, updateMemoServerAction, deleteMemoServerAction} from '@/app/actions/memo.actions'
-import {fetchAssessmentsServerAction, addAssessmentServerAction} from '@/app/actions/assessment.actions'
+import {fetchAssessmentsServerAction, addAssessmentServerAction, updateAssessmentServerAction} from '@/app/actions/assessment.actions'
 
 export function useBlocks(userId: string, date: string) {
     const [blocks, setBlocks] = useState<BlockType[]>([])
@@ -217,17 +217,7 @@ export function useBlocks(userId: string, date: string) {
 
     const updateAssessment = async (assessmentId: string, content: string) => {
         try {
-            const response = await fetch(
-                `/api/users/${userId}/assessments/${date}/${assessmentId}`,
-                {
-                    method: 'PATCH',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({content})
-                }
-            )
-            if (!response.ok) {
-                throw new Error('Failed to update assessment')
-            }
+            await updateAssessmentServerAction(userId, assessmentId, content)
             setAssessments(assessments.map(assessment =>
                 assessment.id === assessmentId
                     ? {...assessment, content}

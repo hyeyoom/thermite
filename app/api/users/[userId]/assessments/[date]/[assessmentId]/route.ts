@@ -8,36 +8,6 @@ interface RouteParams {
     assessmentId: string
 }
 
-export async function PATCH(
-    request: Request,
-    { params }: { params: RouteParams }
-) {
-    const { userId, assessmentId } = params
-    
-    try {
-        const supabase = await createSupabaseClientForServer()
-        const { data: { user } } = await supabase.auth.getUser()
-        
-        if (!user || user.id !== userId) {
-            return NextResponse.json(
-                { error: 'Unauthorized' },
-                { status: 401 }
-            )
-        }
-
-        const { content } = await request.json()
-        const assessmentService = await getAssessmentService()
-        await assessmentService.updateAssessment(assessmentId, content)
-        return NextResponse.json({ success: true })
-    } catch (error: unknown) {
-        console.error('Error updating assessment:', error)
-        return NextResponse.json(
-            { error: 'Failed to update assessment' },
-            { status: 500 }
-        )
-    }
-}
-
 export async function DELETE(
     request: Request,
     { params }: { params: RouteParams }
