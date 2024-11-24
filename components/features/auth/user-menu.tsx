@@ -15,14 +15,16 @@ import {
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu"
 import {cn} from "@/lib/utils"
-import {useAuth} from "@/lib/contexts/auth-context"
+import { signOutServerAction } from '@/app/actions/auth.actions'
 
 interface UserMenuProps {
   user: User
 }
 
 export function UserMenu({ user }: UserMenuProps) {
-  const { signOut } = useAuth()
+  const handleSignOut = async () => {
+    await signOutServerAction()
+  }
 
   return (
     <>
@@ -66,7 +68,7 @@ export function UserMenu({ user }: UserMenuProps) {
                 </li>
                 <li>
                   <button
-                    onClick={signOut}
+                    onClick={handleSignOut}
                     className={cn(
                       "flex items-center gap-2 w-full p-2 rounded-md hover:bg-accent",
                       "text-red-500 hover:text-red-600"
@@ -118,7 +120,7 @@ export function UserMenu({ user }: UserMenuProps) {
               <Button
                 variant="ghost"
                 className="w-full justify-start gap-3 text-red-500 hover:text-red-600"
-                onClick={signOut}
+                onClick={handleSignOut}
               >
                 <LogOut className="w-4 h-4" />
                 로그아웃
