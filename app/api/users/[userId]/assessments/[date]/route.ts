@@ -8,35 +8,6 @@ interface RouteParams {
     date: string
 }
 
-export async function GET(
-    request: Request,
-    { params }: { params: RouteParams }
-) {
-    const { userId, date } = params
-    
-    try {
-        const supabase = await createSupabaseClientForServer()
-        const { data: { user } } = await supabase.auth.getUser()
-        
-        if (!user || user.id !== userId) {
-            return NextResponse.json(
-                { error: 'Unauthorized' },
-                { status: 401 }
-            )
-        }
-
-        const assessmentService = await getAssessmentService()
-        const assessments = await assessmentService.getAssessments(userId, date)
-        return NextResponse.json(assessments)
-    } catch (error: unknown) {
-        console.error('Error fetching assessments:', error)
-        return NextResponse.json(
-            { error: 'Failed to fetch assessments' },
-            { status: 500 }
-        )
-    }
-}
-
 export async function POST(
     request: Request,
     { params }: { params: RouteParams }
