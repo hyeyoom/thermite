@@ -1,21 +1,16 @@
 'use client'
 
 import {Button} from "@/components/ui/button"
-import { createSupabaseClientForBrowser } from "@/lib/utils/supabase/client"
+import {createSupabaseClientForBrowser} from "@/lib/utils/supabase/client"
 
 export function LoginButton() {
     const handleSignIn = async () => {
         const supabase = createSupabaseClientForBrowser()
-        const redirectUrl = process.env.NEXT_PUBLIC_SITE_URL 
-            ? `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback`
-            : `${window.location.origin}/auth/callback`
-
-        console.log('Redirecting to:', redirectUrl)
 
         await supabase.auth.signInWithOAuth({
             provider: 'google',
             options: {
-                redirectTo: redirectUrl,
+                redirectTo: process.env.NEXT_PUBLIC_SUPABASE_GOOGLE_CALLBACK_URL!,
             },
         })
     }
