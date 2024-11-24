@@ -3,7 +3,7 @@ import {Assessment, BlockType, Memo} from '@/lib/types'
 import {addBlockServerAction, fetchBlocksServerAction, updateBlockServerAction} from '@/app/actions/block.actions'
 import {addTodoServerAction, toggleTodoServerAction, deleteTodoServerAction} from '@/app/actions/todo.actions'
 import {fetchMemosServerAction, addMemoServerAction, updateMemoServerAction, deleteMemoServerAction} from '@/app/actions/memo.actions'
-import {fetchAssessmentsServerAction} from '@/app/actions/assessment.actions'
+import {fetchAssessmentsServerAction, addAssessmentServerAction} from '@/app/actions/assessment.actions'
 
 export function useBlocks(userId: string, date: string) {
     const [blocks, setBlocks] = useState<BlockType[]>([])
@@ -208,18 +208,7 @@ export function useBlocks(userId: string, date: string) {
 
     const addAssessment = async (type: 'good' | 'bad' | 'next', content: string) => {
         try {
-            const response = await fetch(
-                `/api/users/${userId}/assessments/${date}`,
-                {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({type, content})
-                }
-            )
-            if (!response.ok) {
-                throw new Error('Failed to add assessment')
-            }
-            const newAssessment = await response.json()
+            const newAssessment = await addAssessmentServerAction(userId, date, type, content)
             setAssessments([...assessments, newAssessment])
         } catch (err) {
             setError(err instanceof Error ? err : new Error('Failed to add assessment'))
