@@ -18,7 +18,7 @@ export async function GET(
         return NextResponse.json(blocks)
     } catch (error: any) {
         console.error('Error fetching blocks:', error)
-        
+
         if (error.message === 'Unauthorized') {
             return NextResponse.json(
                 { error: 'Unauthorized' },
@@ -42,12 +42,26 @@ export async function POST(
 
     try {
         const blockData = await request.json()
-        const block = await blockService.createBlock(userId, { ...blockData, date })
-        return NextResponse.json(block)
-    } catch (error: any) {
-        console.error('Error creating block:', error)
+        console.log('Creating block with data:', {
+            userId,
+            date,
+            blockData
+        })
         
-        if (error.message === 'Unauthorized') {
+        const block = await blockService.createBlock(userId, {
+            date,
+            number: blockData.number,
+            title: blockData.title || '',
+            startTime: blockData.startTime || '',
+            endTime: blockData.endTime || '',
+            reflection: blockData.reflection || ''
+        })
+        
+        return NextResponse.json(block)
+    } catch (error: unknown) {
+        console.error('Error creating block:', error)
+
+        if (error instanceof Error && error.message === 'Unauthorized') {
             return NextResponse.json(
                 { error: 'Unauthorized' },
                 { status: 401 }
