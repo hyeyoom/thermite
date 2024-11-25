@@ -1,9 +1,19 @@
 import {useCallback, useEffect, useState} from 'react'
 import {Assessment, BlockType, Memo} from '@/lib/types'
 import {addBlockServerAction, fetchBlocksServerAction, updateBlockServerAction} from '@/app/actions/block.actions'
-import {addTodoServerAction, toggleTodoServerAction, deleteTodoServerAction} from '@/app/actions/todo.actions'
-import {fetchMemosServerAction, addMemoServerAction, updateMemoServerAction, deleteMemoServerAction} from '@/app/actions/memo.actions'
-import {fetchAssessmentsServerAction, addAssessmentServerAction, updateAssessmentServerAction, deleteAssessmentServerAction} from '@/app/actions/assessment.actions'
+import {addTodoServerAction, deleteTodoServerAction, toggleTodoServerAction} from '@/app/actions/todo.actions'
+import {
+    addMemoServerAction,
+    deleteMemoServerAction,
+    fetchMemosServerAction,
+    updateMemoServerAction
+} from '@/app/actions/memo.actions'
+import {
+    addAssessmentServerAction,
+    deleteAssessmentServerAction,
+    fetchAssessmentsServerAction,
+    updateAssessmentServerAction
+} from '@/app/actions/assessment.actions'
 
 export function useBlocks(userId: string, date: string) {
     const [blocks, setBlocks] = useState<BlockType[]>([])
@@ -42,10 +52,10 @@ export function useBlocks(userId: string, date: string) {
                 ])
 
                 const existingBlockNumbers = blocksData.map(block => block.number)
-                const missingBlocks = initializeBlocks().filter(block => 
+                const missingBlocks = initializeBlocks().filter(block =>
                     !existingBlockNumbers.includes(block.number)
                 )
-                
+
                 setBlocks([...blocksData, ...missingBlocks].sort((a, b) => a.number - b.number))
                 setMemos(memosData)
                 setAssessments(assessmentsData)
@@ -74,13 +84,13 @@ export function useBlocks(userId: string, date: string) {
                 await updateBlockServerAction(newBlock.id, updates)
 
                 setBlocks(prevBlocks => prevBlocks.map(block =>
-                    block.id === blockId ? { ...newBlock, ...updates } : block
+                    block.id === blockId ? {...newBlock, ...updates} : block
                 ))
             } else if (!blockId.startsWith('temp_')) {
                 await updateBlockServerAction(blockId, updates)
 
                 setBlocks(blocks.map(block =>
-                    block.id === blockId ? { ...block, ...updates } : block
+                    block.id === blockId ? {...block, ...updates} : block
                 ))
             }
         } catch (err) {
@@ -113,7 +123,7 @@ export function useBlocks(userId: string, date: string) {
 
             setBlocks(blocks.map(block =>
                 block.id === blockId
-                    ? { ...block, todos: [...block.todos, newTodo] }
+                    ? {...block, todos: [...block.todos, newTodo]}
                     : block
             ))
         } catch (err) {
@@ -134,7 +144,7 @@ export function useBlocks(userId: string, date: string) {
                         ...block,
                         todos: block.todos.map(todo =>
                             todo.id === todoId
-                                ? { ...todo, isCompleted: !todo.isCompleted }
+                                ? {...todo, isCompleted: !todo.isCompleted}
                                 : todo
                         )
                     }

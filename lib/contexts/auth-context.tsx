@@ -38,7 +38,7 @@ export function AuthProvider({children}: { children: React.ReactNode }) {
                 setUser(null)
             }
         } catch (error: unknown) {
-            if (error instanceof Error){
+            if (error instanceof Error) {
                 setUser(null)
             }
             setUser(null)

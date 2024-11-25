@@ -26,11 +26,11 @@ const MemoSection = ({
     });
 
     const resetEditState = () => {
-        setEditState({ type: null, content: '' });
+        setEditState({type: null, content: ''});
     };
 
     const handleAddItem = () => {
-        const { type, content, assessmentType } = editState;
+        const {type, content, assessmentType} = editState;
         if (!content.trim()) return;
 
         if (type === 'memo') {
@@ -65,7 +65,7 @@ const MemoSection = ({
                         <Button
                             variant="ghost"
                             size="sm"
-                            onClick={() => setEditState({ type: 'memo', content: '' })}
+                            onClick={() => setEditState({type: 'memo', content: ''})}
                         >
                             <PlusCircle className="h-4 w-4"/>
                         </Button>
@@ -74,7 +74,7 @@ const MemoSection = ({
                     {editState.type === 'memo' && (
                         <Input
                             value={editState.content}
-                            onChange={(e) => setEditState(prev => ({ ...prev, content: e.target.value }))}
+                            onChange={(e) => setEditState(prev => ({...prev, content: e.target.value}))}
                             onKeyDown={(e) => {
                                 if (e.key === 'Enter' && !e.shiftKey) {
                                     e.preventDefault();
@@ -121,7 +121,11 @@ const MemoSection = ({
                                     <Button
                                         variant="ghost"
                                         size="sm"
-                                        onClick={() => setEditState({ type: 'assessment', content: '', assessmentType: type as 'good' | 'bad' | 'next' })}
+                                        onClick={() => setEditState({
+                                            type: 'assessment',
+                                            content: '',
+                                            assessmentType: type as 'good' | 'bad' | 'next'
+                                        })}
                                     >
                                         <PlusCircle className="h-4 w-4"/>
                                     </Button>
@@ -131,7 +135,7 @@ const MemoSection = ({
                                     <div className="flex items-center gap-2">
                                         <Input
                                             value={editState.content}
-                                            onChange={(e) => setEditState(prev => ({ ...prev, content: e.target.value }))}
+                                            onChange={(e) => setEditState(prev => ({...prev, content: e.target.value}))}
                                             onKeyDown={(e) => {
                                                 if (e.key === 'Enter' && !e.shiftKey) {
                                                     e.preventDefault();
@@ -156,7 +160,8 @@ const MemoSection = ({
                                     {assessments
                                         .filter(assessment => assessment.type === type)
                                         .map((assessment) => (
-                                            <li key={assessment.id} className="group flex items-center gap-2 border-b-2 border-muted">
+                                            <li key={assessment.id}
+                                                className="group flex items-center gap-2 border-b-2 border-muted">
                                                 <input
                                                     type="text"
                                                     defaultValue={assessment.content}

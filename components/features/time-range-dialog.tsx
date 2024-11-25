@@ -1,10 +1,5 @@
 import React from 'react'
-import {
-    Dialog,
-    DialogContent,
-    DialogHeader,
-    DialogTitle,
-} from "@/components/ui/dialog"
+import {Dialog, DialogContent, DialogHeader, DialogTitle,} from "@/components/ui/dialog"
 import {Button} from "@/components/ui/button"
 
 interface TimeRangeDialogProps {
@@ -16,12 +11,12 @@ interface TimeRangeDialogProps {
 }
 
 const TimeRangeDialog = ({
-    isOpen,
-    onClose,
-    startTime: initialStartTime,
-    endTime: initialEndTime,
-    onSubmit,
-}: TimeRangeDialogProps) => {
+                             isOpen,
+                             onClose,
+                             startTime: initialStartTime,
+                             endTime: initialEndTime,
+                             onSubmit,
+                         }: TimeRangeDialogProps) => {
     const [tempStartTime, setTempStartTime] = React.useState(initialStartTime)
     const [tempEndTime, setTempEndTime] = React.useState(initialEndTime)
 
@@ -89,4 +84,4 @@ const TimeRangeDialog = ({
     )
 }
 
-export default TimeRangeDialog 
+export default TimeRangeDialog

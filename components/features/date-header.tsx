@@ -1,6 +1,6 @@
 'use client'
 
-import {format, addDays} from "date-fns"
+import {addDays, format} from "date-fns"
 import {ko} from 'date-fns/locale'
 import {Button} from "@/components/ui/button"
 import {ChevronLeft, ChevronRight} from "lucide-react"
@@ -35,18 +35,18 @@ const DateHeader = ({date}: DateHeaderProps) => {
                     size="icon"
                     onClick={() => handleDateChange(-1)}
                 >
-                    <ChevronLeft className="h-4 w-4" />
+                    <ChevronLeft className="h-4 w-4"/>
                 </Button>
                 <Button
                     variant="ghost"
                     size="icon"
                     onClick={() => handleDateChange(1)}
                 >
-                    <ChevronRight className="h-4 w-4" />
+                    <ChevronRight className="h-4 w-4"/>
                 </Button>
             </div>
         </div>
     )
 }
 
-export default DateHeader 
+export default DateHeader

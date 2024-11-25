@@ -1,20 +1,20 @@
-import { createSupabaseClientForServer } from '@/lib/utils/supabase/server'
-import { TodoService } from '../todo.service'
-import { Todo } from '@/lib/types'
-import { Database } from '@/lib/utils/supabase/supabase'
+import {createSupabaseClientForServer} from '@/lib/utils/supabase/server'
+import {TodoService} from '../todo.service'
+import {Todo} from '@/lib/types'
+import {Database} from '@/lib/utils/supabase/supabase'
 
 type DbTodo = Database['public']['Tables']['block_todos']['Row']
 
 export class SupabaseTodoService implements TodoService {
     async getTodos(blockId: string): Promise<Todo[]> {
         const supabase = await createSupabaseClientForServer()
-        
-        const { data, error } = await supabase
+
+        const {data, error} = await supabase
             .from('block_todos')
             .select('*')
             .eq('block_id', blockId)
             .is('deleted_at', null)
-            .order('created_at', { ascending: true })
+            .order('created_at', {ascending: true})
 
         if (error) throw error
 
@@ -23,13 +23,13 @@ export class SupabaseTodoService implements TodoService {
 
     async addTodo(blockId: string, todoData: Partial<Todo>): Promise<Todo> {
         const supabase = await createSupabaseClientForServer()
-        const { data: { user } } = await supabase.auth.getUser()
-        
+        const {data: {user}} = await supabase.auth.getUser()
+
         if (!user) {
             throw new Error('Unauthorized')
         }
 
-        const { data, error } = await supabase
+        const {data, error} = await supabase
             .from('block_todos')
             .insert({
                 id: crypto.randomUUID(),
@@ -52,7 +52,7 @@ export class SupabaseTodoService implements TodoService {
     async updateTodo(todoId: string, updates: Partial<Todo>): Promise<void> {
         const supabase = await createSupabaseClientForServer()
 
-        const { error } = await supabase
+        const {error} = await supabase
             .from('block_todos')
             .update({
                 content: updates.content,
@@ -67,7 +67,7 @@ export class SupabaseTodoService implements TodoService {
     async deleteTodo(todoId: string): Promise<void> {
         const supabase = await createSupabaseClientForServer()
 
-        const { error } = await supabase
+        const {error} = await supabase
             .from('block_todos')
             .update({
                 deleted_at: new Date().toISOString()

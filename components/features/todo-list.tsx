@@ -13,11 +13,11 @@ interface TodoListProps {
 }
 
 const TodoList = ({
-    todos,
-    onAddTodo,
-    onToggleTodo,
-    onDeleteTodo,
-}: TodoListProps) => {
+                      todos,
+                      onAddTodo,
+                      onToggleTodo,
+                      onDeleteTodo,
+                  }: TodoListProps) => {
     const [isAddingTodo, setIsAddingTodo] = React.useState(false)
     const [newTodoContent, setNewTodoContent] = React.useState('')
 
@@ -107,4 +107,4 @@ const TodoList = ({
     )
 }
 
-export default TodoList 
+export default TodoList
