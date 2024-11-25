@@ -45,3 +45,19 @@ export async function updateBlockServerAction(
   const blockService = await getBlockService()
   await blockService.updateBlock(blockId, updates)
 }
+
+export async function fetchWeeklyBlocksServerAction(userId: string, weekDates: string[]): Promise<BlockType[]> {
+  const supabase = await createSupabaseClientForServer()
+  const { data: { user } } = await supabase.auth.getUser()
+
+  if (!user || user.id !== userId) {
+    throw new Error('Unauthorized')
+  }
+
+  const blockService = await getBlockService()
+  const blocksPromises = weekDates.map(date => blockService.getBlocks(userId, date))
+  const blocksArrays = await Promise.all(blocksPromises)
+  
+  // 모든 날짜의 블록을 하나의 배열로 합침
+  return blocksArrays.flat()
+}
