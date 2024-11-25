@@ -31,6 +31,7 @@ export function PlanningTable({
                                   weekDays,
                                   blocks,
                                   onUpdateBlock,
+                                  onAddBlock,
                               }: PlanningTableProps) {
     const [editingCell, setEditingCell] = useState<EditingCell | null>(null)
     const [editingTitle, setEditingTitle] = useState('')
@@ -44,8 +45,9 @@ export function PlanningTable({
         const block = getBlock(date, blockNumber)
         if (!block) {
             try {
+                const newBlock = await onAddBlock(date, blockNumber)
                 setEditingCell({date, blockNumber})
-                setEditingTitle('')
+                setEditingTitle(newBlock.title || '')
             } catch (error) {
                 console.error('Error creating block:', error)
             }
