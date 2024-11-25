@@ -41,7 +41,12 @@ export function useBlocks(userId: string, date: string) {
                     fetchAssessmentsServerAction(userId, date)
                 ])
 
-                setBlocks(blocksData.length ? blocksData : initializeBlocks())
+                const existingBlockNumbers = blocksData.map(block => block.number)
+                const missingBlocks = initializeBlocks().filter(block => 
+                    !existingBlockNumbers.includes(block.number)
+                )
+                
+                setBlocks([...blocksData, ...missingBlocks].sort((a, b) => a.number - b.number))
                 setMemos(memosData)
                 setAssessments(assessmentsData)
             } catch (err) {
@@ -53,7 +58,7 @@ export function useBlocks(userId: string, date: string) {
         }
 
         fetchData()
-    }, [userId, date])
+    }, [userId, date, initializeBlocks])
 
     const updateBlock = async (blockId: string, updates: Partial<BlockType>) => {
         try {
