@@ -15,7 +15,6 @@ interface PlanningViewProps {
 export function PlanningView({userId}: PlanningViewProps) {
     const [weekStart, setWeekStart] = useState<'monday' | 'sunday'>('monday')
     const [blocks, setBlocks] = useState<BlockType[]>([])
-    const [isLoading, setIsLoading] = useState(true)
 
     const weekDays = useMemo(() => {
         const today = new Date()
@@ -37,14 +36,11 @@ export function PlanningView({userId}: PlanningViewProps) {
     useEffect(() => {
         const fetchBlocks = async () => {
             try {
-                setIsLoading(true)
                 const weekDates = weekDays.map(day => day.fullDate)
                 const data = await fetchWeeklyBlocksServerAction(userId, weekDates)
                 setBlocks(data)
             } catch (error) {
                 console.error('Error fetching blocks:', error)
-            } finally {
-                setIsLoading(false)
             }
         }
 
@@ -90,7 +86,6 @@ export function PlanningView({userId}: PlanningViewProps) {
                 weekDays={weekDays}
                 blocks={blocks}
                 userId={userId}
-                isLoading={isLoading}
                 onUpdateBlock={handleUpdateBlock}
                 onAddBlock={handleAddBlock}
             />
