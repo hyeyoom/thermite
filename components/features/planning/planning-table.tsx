@@ -21,7 +21,7 @@ export function PlanningTable({ weekDays }: PlanningTableProps) {
           {weekDays.map((day) => (
             <Link 
               key={day.fullDate}
-              href={`/dashboard?date=${day.fullDate}`}
+              href={`/dashboard/${day.fullDate}`}
               className="p-4 text-center hover:text-primary transition-colors"
             >
               <div className="font-medium">{day.dayName}</div>

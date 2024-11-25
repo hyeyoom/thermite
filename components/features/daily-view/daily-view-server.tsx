@@ -1,12 +1,12 @@
 import {createSupabaseClientForServer} from '@/lib/utils/supabase/server'
 import {DailyViewClient} from './daily-view-client'
-import {format} from 'date-fns'
 import {Suspense} from "react";
 
-export async function DailyViewServer() {
-    const today = new Date()
-    const formattedDate = format(today, 'yyyy-MM-dd')
+interface DailyViewServerProps {
+  date: string
+}
 
+export async function DailyViewServer({ date }: DailyViewServerProps) {
     const supabase = await createSupabaseClientForServer()
     const { data: { user } } = await supabase.auth.getUser()
 
@@ -16,7 +16,7 @@ export async function DailyViewServer() {
 
     return (
         <Suspense>
-            <DailyViewClient userId={user.id} date={formattedDate} />
+            <DailyViewClient userId={user.id} date={date} />
         </Suspense>
     )
 }

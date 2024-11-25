@@ -1,5 +1,7 @@
-import { DailyViewServer } from '@/components/features/daily-view/daily-view-server'
+import { redirect } from 'next/navigation'
+import { format } from 'date-fns'
 
 export default function DashboardPage() {
-    return <DailyViewServer />
+  const today = format(new Date(), 'yyyy-MM-dd')
+  redirect(`/dashboard/${today}`)
 } 
