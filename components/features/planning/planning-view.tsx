@@ -47,7 +47,7 @@ export function PlanningView({userId}: PlanningViewProps) {
         if (userId) {
             fetchBlocks()
         }
-    }, [userId, weekStart])
+    }, [userId, weekStart, weekDays])
 
     const handleUpdateBlock = async (blockId: string, updates: Partial<BlockType>) => {
         try {

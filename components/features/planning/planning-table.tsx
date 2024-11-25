@@ -18,7 +18,6 @@ interface PlanningTableProps {
     weekDays: WeekDay[]
     blocks: BlockType[]
     userId: string
-    isLoading: boolean
     onUpdateBlock: (blockId: string, updates: Partial<BlockType>) => Promise<void>
     onAddBlock: (date: string, blockNumber: number) => Promise<BlockType>
 }
@@ -31,7 +30,6 @@ interface EditingCell {
 export function PlanningTable({
                                   weekDays,
                                   blocks,
-                                  isLoading,
                                   onUpdateBlock,
                               }: PlanningTableProps) {
     const [editingCell, setEditingCell] = useState<EditingCell | null>(null)
@@ -71,10 +69,6 @@ export function PlanningTable({
         }
     }
 
-    if (isLoading) {
-        return <div className="animate-pulse">로딩 중...</div>
-    }
-
     if (isMobile) {
         return (
             <div className="space-y-8">
@@ -102,7 +96,11 @@ export function PlanningTable({
                                     <Card
                                         key={`cell-${blockIndex}`}
                                         className={`p-3 min-h-[80px] flex flex-col items-center justify-center cursor-pointer
-                      ${isEditing ? 'border-primary' : 'hover:border-primary/50'} 
+                      ${block?.title
+                                            ? 'bg-primary/5 hover:bg-primary/10'
+                                            : 'hover:border-primary/50'
+                                        } 
+                      ${isEditing ? 'border-primary' : ''} 
                       transition-colors relative`}
                                         onClick={() => handleCellClick(day.fullDate, blockIndex + 1)}
                                     >
@@ -173,7 +171,11 @@ export function PlanningTable({
                                     <Card
                                         key={`cell-${day.fullDate}-${blockIndex}`}
                                         className={`p-4 min-h-[100px] flex items-center justify-center cursor-pointer
-                      ${isEditing ? 'border-primary' : 'hover:border-primary/50'} 
+                      ${block?.title
+                                            ? 'bg-primary/5 hover:bg-primary/10'
+                                            : 'hover:border-primary/50'
+                                        } 
+                      ${isEditing ? 'border-primary' : ''} 
                       transition-colors`}
                                         onClick={() => handleCellClick(day.fullDate, blockIndex + 1)}
                                     >
