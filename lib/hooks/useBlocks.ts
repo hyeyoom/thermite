@@ -120,7 +120,21 @@ export function useBlocks(userId: string, date: string) {
 
     const addTodo = async (blockId: string, content: string) => {
         try {
-            const newTodo = await addTodoServerAction(userId, blockId, content)
+            let determinedBlockId: string | null = null
+
+            if (blockId.startsWith(tempIdPrefix)) {
+                const foundTempBlock = blocks.find(block => block.id === blockId)
+                if (foundTempBlock !== undefined) {
+                    const newBlock = await addBlockServerAction(userId, date, foundTempBlock.number)
+                    determinedBlockId = newBlock.id
+                } else {
+                    throw new Error('Unable to find block!')
+                }
+            } else {
+                determinedBlockId = blockId
+            }
+
+            const newTodo = await addTodoServerAction(userId, determinedBlockId, content)
 
             setBlocks(blocks.map(block =>
                 block.id === blockId
