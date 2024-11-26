@@ -21,10 +21,11 @@ export function useBlocks(userId: string, date: string) {
     const [assessments, setAssessments] = useState<Assessment[]>([])
     const [isLoading, setIsLoading] = useState(true)
     const [error, setError] = useState<Error | null>(null)
+    const tempIdPrefix = 'temp_'
 
     const initializeBlocks = useCallback(() => {
         const initialBlocks: BlockType[] = Array.from({length: 6}, (_, index) => ({
-            id: `temp_${Date.now()}_${index}`,
+            id: `${tempIdPrefix}${Date.now()}_${index}`,
             user_id: userId,
             date: date,
             number: index + 1,
@@ -77,7 +78,7 @@ export function useBlocks(userId: string, date: string) {
                 updates.endTime ||
                 updates.reflection?.trim()
 
-            if (blockId.startsWith('temp_') && hasContent) {
+            if (blockId.startsWith(tempIdPrefix) && hasContent) {
                 const newBlock = await addBlockServerAction(userId, date,
                     blocks.findIndex(b => b.id === blockId) + 1)
 
@@ -86,7 +87,7 @@ export function useBlocks(userId: string, date: string) {
                 setBlocks(prevBlocks => prevBlocks.map(block =>
                     block.id === blockId ? {...newBlock, ...updates} : block
                 ))
-            } else if (!blockId.startsWith('temp_')) {
+            } else if (!blockId.startsWith(tempIdPrefix)) {
                 await updateBlockServerAction(blockId, updates)
 
                 setBlocks(blocks.map(block =>
