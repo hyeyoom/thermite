@@ -2,6 +2,8 @@
 
 [블럭식스](https://block6-three.vercel.app/)
 
+![사이트사진인데안나오나보네?](assets/screen.png)
+
 # Inspired by
 
 [시간을 선택하는 기술 블럭식스](https://www.yes24.com/Product/Goods/104868817)
