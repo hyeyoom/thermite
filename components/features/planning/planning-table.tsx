@@ -42,30 +42,31 @@ export function PlanningTable({
     }
 
     const handleCellClick = async (date: string, blockNumber: number) => {
-        const block = getBlock(date, blockNumber)
-        if (!block) {
-            try {
-                const newBlock = await onAddBlock(date, blockNumber)
-                setEditingCell({date, blockNumber})
-                setEditingTitle(newBlock.title || '')
-            } catch (error) {
-                console.error('Error creating block:', error)
-            }
-        } else {
-            setEditingCell({date, blockNumber})
-            setEditingTitle(block.title || '')
-        }
+        setEditingCell({date, blockNumber})
+        setEditingTitle('')
     }
 
     const handleTitleSave = async (blockId: string | undefined) => {
         if (!editingCell) return
+        if (editingTitle === '') return
 
         try {
             if (blockId) {
-                await onUpdateBlock(blockId, {title: editingTitle})
+                onUpdateBlock(blockId, {title: editingTitle})
+                    .finally(() => {
+                        setEditingCell(null)
+                        setEditingTitle('')
+                    })
+            } else {
+                onAddBlock(editingCell.date, editingCell.blockNumber)
+                    .then(r =>
+                        onUpdateBlock(r.id, {title: editingTitle})
+                    )
+                    .finally(() => {
+                        setEditingCell(null)
+                        setEditingTitle('')
+                    })
             }
-            setEditingCell(null)
-            setEditingTitle('')
         } catch (error) {
             console.error('Error updating block title:', error)
         }
