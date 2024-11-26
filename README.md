@@ -1,36 +1,53 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Block6
 
-## Getting Started
+[블럭식스](https://block6-three.vercel.app/)
 
-First, run the development server:
+# Inspired by
+
+[시간을 선택하는 기술 블럭식스](https://www.yes24.com/Product/Goods/104868817)
+
+나같이 시간을 마이크로 단위로 쪼개서 쓸 수 없는 사람한테 적당한 것 같아서 좋았다.  
+그런데 종이에 정성스럽게 적을 자신이 없어서 서비스를 만들었다. 귀찮기 때문에.
+
+vercel + supabase 무료티어로 서비스 중
+
+# Getting Started
+
+개발하려면?
 
 ```bash
-npm run dev
-# or
 yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+[http://localhost:3000](http://localhost:3000) 열어서 결과 확인.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+저장소에 합치고 싶으면?
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+yarn run build
+```
 
-## Learn More
+제발 빌드 성공하는건 볼 것(은 내게 하는 말)
 
-To learn more about Next.js, take a look at the following resources:
+## .env에는 뭐가 있나요
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```txt
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+NEXT_PUBLIC_SITE_URL=
+NEXT_PUBLIC_SUPABASE_GOOGLE_CALLBACK_URL=
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 스키마는?
 
-## Deploy on Vercel
+쓰기 귀찮아.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## magic
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+supabase의 은혜를 경험하세요.
+
+```bash
+npx supabase login
+npx supabase gen types typescript --project-id [PROJECT_ID] --schema public > types/supabase.ts
+```
+
