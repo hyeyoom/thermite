@@ -12,7 +12,7 @@ export async function fetchBlocksServerAction(userId: string, date: string): Pro
         throw new Error('Unauthorized')
     }
 
-    const blockService = await getBlockService()
+    const blockService = getBlockService()
     return blockService.getBlocks(userId, date)
 }
 
@@ -24,7 +24,7 @@ export async function addBlockServerAction(userId: string, date: string, blockNu
         throw new Error('Unauthorized')
     }
 
-    const blockService = await getBlockService()
+    const blockService = getBlockService()
     return blockService.createBlock(userId, {
         date,
         number: blockNumber
@@ -42,7 +42,7 @@ export async function updateBlockServerAction(
         throw new Error('Unauthorized')
     }
 
-    const blockService = await getBlockService()
+    const blockService = getBlockService()
     await blockService.updateBlock(blockId, updates)
 }
 
@@ -54,7 +54,7 @@ export async function fetchWeeklyBlocksServerAction(userId: string, weekDates: s
         throw new Error('Unauthorized')
     }
 
-    const blockService = await getBlockService()
+    const blockService = getBlockService()
     const blocksPromises = weekDates.map(date => blockService.getBlocks(userId, date))
     const blocksArrays = await Promise.all(blocksPromises)
 

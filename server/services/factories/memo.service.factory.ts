@@ -3,9 +3,9 @@ import { SupabaseMemoService } from '../supabase/memo.service'
 
 let memoService: MemoService | null = null
 
-export async function getMemoService(): Promise<MemoService> {
+export function getMemoService(): MemoService {
     if (!memoService) {
         memoService = new SupabaseMemoService()
     }
     return memoService
-} 
+}

@@ -15,7 +15,7 @@ export async function fetchAssessmentsServerAction(
         throw new Error('Unauthorized')
     }
 
-    const assessmentService = await getAssessmentService()
+    const assessmentService = getAssessmentService()
     return assessmentService.getAssessments(userId, date)
 }
 
@@ -32,7 +32,7 @@ export async function addAssessmentServerAction(
         throw new Error('Unauthorized')
     }
 
-    const assessmentService = await getAssessmentService()
+    const assessmentService = getAssessmentService()
     return assessmentService.addAssessment(userId, date, type, content)
 }
 
@@ -48,7 +48,7 @@ export async function updateAssessmentServerAction(
         throw new Error('Unauthorized')
     }
 
-    const assessmentService = await getAssessmentService()
+    const assessmentService = getAssessmentService()
     await assessmentService.updateAssessment(assessmentId, content)
 }
 
@@ -63,6 +63,6 @@ export async function deleteAssessmentServerAction(
         throw new Error('Unauthorized')
     }
 
-    const assessmentService = await getAssessmentService()
+    const assessmentService = getAssessmentService()
     await assessmentService.deleteAssessment(assessmentId)
 }

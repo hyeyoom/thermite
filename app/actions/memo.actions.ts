@@ -15,7 +15,7 @@ export async function fetchMemosServerAction(
         throw new Error('Unauthorized')
     }
 
-    const memoService = await getMemoService()
+    const memoService = getMemoService()
     return memoService.getMemos(userId, date)
 }
 
@@ -31,7 +31,7 @@ export async function addMemoServerAction(
         throw new Error('Unauthorized')
     }
 
-    const memoService = await getMemoService()
+    const memoService = getMemoService()
     return memoService.addMemo(userId, date, content)
 }
 
@@ -47,7 +47,7 @@ export async function updateMemoServerAction(
         throw new Error('Unauthorized')
     }
 
-    const memoService = await getMemoService()
+    const memoService = getMemoService()
     await memoService.updateMemo(memoId, content)
 }
 
@@ -62,6 +62,6 @@ export async function deleteMemoServerAction(
         throw new Error('Unauthorized')
     }
 
-    const memoService = await getMemoService()
+    const memoService = getMemoService()
     await memoService.deleteMemo(memoId)
 }

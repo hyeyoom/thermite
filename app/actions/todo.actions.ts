@@ -16,7 +16,7 @@ export async function addTodoServerAction(
         throw new Error('Unauthorized')
     }
 
-    const todoService = await getTodoService()
+    const todoService = getTodoService()
     return todoService.addTodo(blockId, {
         content,
         isCompleted: false
@@ -35,7 +35,7 @@ export async function toggleTodoServerAction(
         throw new Error('Unauthorized')
     }
 
-    const todoService = await getTodoService()
+    const todoService = getTodoService()
     await todoService.updateTodo(todoId, {isCompleted})
 }
 
@@ -50,6 +50,6 @@ export async function deleteTodoServerAction(
         throw new Error('Unauthorized')
     }
 
-    const todoService = await getTodoService()
+    const todoService = getTodoService()
     await todoService.deleteTodo(todoId)
 }

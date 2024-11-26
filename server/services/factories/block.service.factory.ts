@@ -1,11 +1,11 @@
-import { BlockService } from '../block.service'
-import { SupabaseBlockService } from '../supabase/block.service'
+import {BlockService} from '../block.service'
+import {SupabaseBlockService} from '../supabase/block.service'
 
 let blockService: BlockService | null = null
 
-export async function getBlockService(): Promise<BlockService> {
+export function getBlockService(): BlockService {
     if (!blockService) {
         blockService = new SupabaseBlockService()
     }
     return blockService
-} 
+}
