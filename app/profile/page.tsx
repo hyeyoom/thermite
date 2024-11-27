@@ -1,9 +1,8 @@
 import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card"
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar"
-import {Button} from "@/components/ui/button"
-import {Pencil} from "lucide-react"
 import {redirect} from "next/navigation";
 import {createSupabaseClientForServer} from "@/lib/utils/supabase/server";
+import {ProfileEditClient} from "@/components/features/profile/profile-edit-client";
 
 export default async function ProfilePage() {
     const supabase = await createSupabaseClientForServer()
@@ -25,17 +24,8 @@ export default async function ProfilePage() {
                             <AvatarImage src={user.user_metadata?.avatar_url}/>
                             <AvatarFallback>{user.email?.charAt(0).toUpperCase()}</AvatarFallback>
                         </Avatar>
-                        <div className="flex-1 space-y-1">
-                            <div className="flex items-center justify-between">
-                                <h3 className="text-2xl font-semibold">
-                                    {user.user_metadata?.full_name || '이름 없음'}
-                                </h3>
-                                <Button variant="ghost" size="icon">
-                                    <Pencil className="w-4 h-4"/>
-                                </Button>
-                            </div>
-                            <p className="text-sm text-muted-foreground">{user.email}</p>
-                        </div>
+                        <ProfileEditClient name={user.user_metadata?.full_name || '이름 없음'}
+                                           email={user.email || 'no-email'}/>
                     </div>
 
                     <div className="space-y-2">
