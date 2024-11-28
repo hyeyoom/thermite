@@ -4,6 +4,7 @@ import {Button} from "@/components/ui/button";
 import {Pencil} from "lucide-react";
 import {useEffect, useRef, useState} from "react";
 import {upsertProfileServerAction} from "@/app/actions/profile.actions";
+import {useRouter} from "next/navigation";
 
 interface ProfileEditClientProps {
     userId: string,
@@ -12,6 +13,7 @@ interface ProfileEditClientProps {
 }
 
 export function ProfileEditClient({userId, name, email}: ProfileEditClientProps) {
+    const router = useRouter()
     const [isNameEditing, setIsNameEditing] = useState(false)
     const [editedName, setEditedName] = useState(name)
     const inputRef = useRef<HTMLInputElement>(null)
@@ -24,14 +26,13 @@ export function ProfileEditClient({userId, name, email}: ProfileEditClientProps)
         setIsNameEditing(false)
         const trimmedName = editedName.trim() || name
         setEditedName(trimmedName)
-        
+
         try {
-            console.log('프로필 업데이트 시도:', {userId, name: trimmedName})
             await upsertProfileServerAction(userId, {
                 id: userId,
                 name: trimmedName
             })
-            console.log('프로필 업데이트 성공')
+            router.refresh()
         } catch (error) {
             console.error('프로필 업데이트 중 오류:', error)
             setEditedName(name)

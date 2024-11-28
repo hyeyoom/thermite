@@ -19,9 +19,10 @@ import {signOutServerAction} from '@/app/actions/auth.actions'
 
 interface UserMenuProps {
     user: User
+    displayName: string
 }
 
-export function UserMenu({user}: UserMenuProps) {
+export function UserMenu({user, displayName}: UserMenuProps) {
     const handleSignOut = async () => {
         await signOutServerAction()
     }
@@ -46,7 +47,7 @@ export function UserMenu({user}: UserMenuProps) {
                                     {user.email?.charAt(0).toUpperCase()}
                                 </div>
                             )}
-                            <span>{user.user_metadata?.full_name || user.email}</span>
+                            <span>{displayName}</span>
                         </NavigationMenuTrigger>
                         <NavigationMenuContent>
                             <ul className="w-48 p-2">
