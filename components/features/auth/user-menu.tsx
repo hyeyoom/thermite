@@ -103,7 +103,7 @@ export function UserMenu({user, displayName}: UserMenuProps) {
                                 {user.email?.charAt(0).toUpperCase()}
                             </div>
                             <div className="flex flex-col">
-                                <span className="font-medium">{user.user_metadata?.full_name}</span>
+                                <span className="font-medium">{displayName}</span>
                                 <span className="text-sm text-muted-foreground">{user.email}</span>
                             </div>
                         </div>
