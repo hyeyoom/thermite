@@ -25,16 +25,20 @@ export function ProfileEditClient({userId, name, email}: ProfileEditClientProps)
     const handleBlur = async () => {
         setIsNameEditing(false)
         const trimmedName = editedName.trim() || name
-        setEditedName(trimmedName)
-
-        try {
-            await upsertProfileServerAction(userId, {
-                id: userId,
-                name: trimmedName
-            })
-            router.refresh()
-        } catch (error) {
-            console.error('프로필 업데이트 중 오류:', error)
+        
+        if (trimmedName !== name) {
+            try {
+                await upsertProfileServerAction(userId, {
+                    id: userId,
+                    name: trimmedName
+                })
+                setEditedName(trimmedName)
+                router.refresh()
+            } catch (error) {
+                console.error('프로필 업데이트 중 오류:', error)
+                setEditedName(name)
+            }
+        } else {
             setEditedName(name)
         }
     }
