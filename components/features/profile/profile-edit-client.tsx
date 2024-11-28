@@ -3,14 +3,15 @@
 import {Button} from "@/components/ui/button";
 import {Pencil} from "lucide-react";
 import {useEffect, useRef, useState} from "react";
+import {upsertProfileServerAction} from "@/app/actions/profile.actions";
 
 interface ProfileEditClientProps {
+    userId: string,
     name: string,
     email: string,
 }
 
-export function ProfileEditClient({name, email}: ProfileEditClientProps) {
-
+export function ProfileEditClient({userId, name, email}: ProfileEditClientProps) {
     const [isNameEditing, setIsNameEditing] = useState(false)
     const [editedName, setEditedName] = useState(name)
     const inputRef = useRef<HTMLInputElement>(null)
@@ -19,9 +20,22 @@ export function ProfileEditClient({name, email}: ProfileEditClientProps) {
         setIsNameEditing(true)
     }
 
-    const handleBlur = () => {
+    const handleBlur = async () => {
         setIsNameEditing(false)
-        setEditedName(editedName.trim() || name)
+        const trimmedName = editedName.trim() || name
+        setEditedName(trimmedName)
+        
+        try {
+            console.log('프로필 업데이트 시도:', {userId, name: trimmedName})
+            await upsertProfileServerAction(userId, {
+                id: userId,
+                name: trimmedName
+            })
+            console.log('프로필 업데이트 성공')
+        } catch (error) {
+            console.error('프로필 업데이트 중 오류:', error)
+            setEditedName(name)
+        }
     }
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {

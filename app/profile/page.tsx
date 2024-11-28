@@ -3,6 +3,7 @@ import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar"
 import {redirect} from "next/navigation";
 import {createSupabaseClientForServer} from "@/lib/utils/supabase/server";
 import {ProfileEditClient} from "@/components/features/profile/profile-edit-client";
+import {fetchProfileServerAction} from "@/app/actions/profile.actions";
 
 export default async function ProfilePage() {
     const supabase = await createSupabaseClientForServer()
@@ -11,6 +12,8 @@ export default async function ProfilePage() {
     if (!user) {
         redirect('/')
     }
+
+    const profile = await fetchProfileServerAction(user.id)
 
     return (
         <div className="max-w-2xl mx-auto space-y-6 pt-12">
@@ -24,8 +27,10 @@ export default async function ProfilePage() {
                             <AvatarImage src={user.user_metadata?.avatar_url}/>
                             <AvatarFallback>{user.email?.charAt(0).toUpperCase()}</AvatarFallback>
                         </Avatar>
-                        <ProfileEditClient name={user.user_metadata?.full_name || '이름 없음'}
-                                           email={user.email || 'no-email'}/>
+                        <ProfileEditClient
+                            userId={user.id}
+                            name={profile?.name || user.user_metadata?.full_name || '이름 없음'}
+                            email={user.email || 'no-email'}/>
                     </div>
 
                     <div className="space-y-2">

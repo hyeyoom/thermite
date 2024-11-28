@@ -63,3 +63,8 @@ export interface Assessment {
     created_at: string
     updated_at: string
 }
+
+export interface Profile {
+    id: string,
+    name: string,
+}
