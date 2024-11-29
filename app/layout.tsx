@@ -4,6 +4,7 @@ import "./globals.css";
 import {ThemeProvider} from "@/components/theme-provider"
 import {AuthProvider} from "@/lib/contexts/auth-context";
 import {ServerNavbar} from "@/components/features/server-navbar";
+import {headers} from 'next/headers'
 
 const geistSans = localFont({
     src: "./fonts/GeistVF.woff",
@@ -40,8 +41,14 @@ export default function RootLayout({
                                    }: Readonly<{
     children: React.ReactNode;
 }>) {
+    const headersList = headers()
+    const preferredLanguage = headersList.get('x-preferred-language')
+
     return (
-        <html lang="ko" suppressHydrationWarning>
+        <html lang={preferredLanguage || 'ko'} suppressHydrationWarning>
+        <head>
+            <meta name="x-preferred-language" content={preferredLanguage || 'ko'}/>
+        </head>
         <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <AuthProvider>
             <ThemeProvider
