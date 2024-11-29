@@ -1,0 +1,13 @@
+export type TranslationKey =
+    | 'common.loading'
+    | 'common.error'
+    | 'auth.login'
+    | 'auth.logout'
+    | 'landing.title'
+    | 'landing.description'
+    | 'planning.title'
+    | 'planning.weekStart'
+    | 'block.untitled'
+    | 'block.addTodo'
+    | 'profile.title'
+    | 'profile.settings'
