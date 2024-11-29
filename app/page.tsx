@@ -1,10 +1,12 @@
 import {LoginButton} from "@/components/features/auth/login-button"
 import {createSupabaseClientForServer} from "@/lib/utils/supabase/server"
 import {redirect} from "next/navigation"
+import {getTranslation} from "@/lib/i18n/server"
 
 export default async function LandingPage() {
     const supabase = await createSupabaseClientForServer()
     const {data: {user}} = await supabase.auth.getUser()
+    const {t} = getTranslation()
 
     if (user) {
         redirect('/dashboard')
@@ -14,10 +16,10 @@ export default async function LandingPage() {
         <div className="flex flex-col items-center justify-center min-h-[80vh] space-y-12">
             <div className="space-y-4 text-center">
                 <h1 className="text-4xl sm:text-6xl font-bold tracking-tight">
-                    하루를 <span className="text-primary">6개의 블록</span>으로
+                    <span className="text-primary">{t('landing.title')}</span>
                 </h1>
                 <p className="text-xl text-muted-foreground max-w-2xl">
-                    Block 6는 하루를 6개의 시간 블록으로 나누어 효율적으로 관리할 수 있게 도와주는 도구입니다.
+                    {t('landing.description')}
                 </p>
             </div>
 
