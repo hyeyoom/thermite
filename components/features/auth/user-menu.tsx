@@ -1,11 +1,11 @@
 'use client'
 
+import {useTranslation} from '@/lib/hooks/useTranslation'
 import {User} from "@supabase/supabase-js"
 import {Button} from "@/components/ui/button"
 import {Sheet, SheetContent, SheetTrigger} from "@/components/ui/sheet"
 import {LogOut, Settings, User as UserIcon} from "lucide-react"
 import Link from "next/link"
-import Image from "next/image"
 import {
     NavigationMenu,
     NavigationMenuContent,
@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/navigation-menu"
 import {cn} from "@/lib/utils"
 import {signOutServerAction} from '@/app/actions/auth.actions'
+import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
 
 interface UserMenuProps {
     user: User
@@ -23,6 +24,8 @@ interface UserMenuProps {
 }
 
 export function UserMenu({user, displayName}: UserMenuProps) {
+    const {t} = useTranslation()
+
     const handleSignOut = async () => {
         await signOutServerAction()
     }
@@ -33,30 +36,23 @@ export function UserMenu({user, displayName}: UserMenuProps) {
             <NavigationMenu className="hidden sm:flex">
                 <NavigationMenuList>
                     <NavigationMenuItem>
-                        <NavigationMenuTrigger className="flex items-center gap-2">
-                            {user.user_metadata?.avatar_url ? (
-                                <Image
-                                    src={user.user_metadata.avatar_url}
-                                    alt="User avatar"
-                                    width={32}
-                                    height={32}
-                                    className="rounded-full"
-                                />
-                            ) : (
-                                <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center">
-                                    {user.email?.charAt(0).toUpperCase()}
-                                </div>
-                            )}
-                            <span>{displayName}</span>
+                        <NavigationMenuTrigger className="h-8 px-3">
+                            <div className="flex items-center gap-2">
+                                <Avatar className="h-6 w-6">
+                                    <AvatarImage src={user.user_metadata?.avatar_url}/>
+                                    <AvatarFallback>{displayName?.charAt(0).toUpperCase()}</AvatarFallback>
+                                </Avatar>
+                                <span className="text-sm">{displayName}</span>
+                            </div>
                         </NavigationMenuTrigger>
                         <NavigationMenuContent>
-                            <ul className="w-48 p-2">
+                            <ul className="p-2 w-48">
                                 <li>
                                     <Link href="/profile" legacyBehavior passHref>
                                         <NavigationMenuLink
                                             className={cn("flex items-center gap-2 w-full p-2 rounded-md hover:bg-accent", "cursor-pointer")}>
                                             <UserIcon className="w-4 h-4"/>
-                                            <span>프로필</span>
+                                            <span>{t('profile.title')}</span>
                                         </NavigationMenuLink>
                                     </Link>
                                 </li>
@@ -65,7 +61,7 @@ export function UserMenu({user, displayName}: UserMenuProps) {
                                         <NavigationMenuLink
                                             className={cn("flex items-center gap-2 w-full p-2 rounded-md hover:bg-accent", "cursor-pointer")}>
                                             <Settings className="w-4 h-4"/>
-                                            <span>설정</span>
+                                            <span>{t('profile.settings')}</span>
                                         </NavigationMenuLink>
                                     </Link>
                                 </li>
@@ -78,7 +74,7 @@ export function UserMenu({user, displayName}: UserMenuProps) {
                                         )}
                                     >
                                         <LogOut className="w-4 h-4"/>
-                                        <span>로그아웃</span>
+                                        <span>{t('auth.logout')}</span>
                                     </button>
                                 </li>
                             </ul>

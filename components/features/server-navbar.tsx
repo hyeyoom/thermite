@@ -5,10 +5,12 @@ import {UserMenu} from "@/components/features/auth/user-menu"
 import {CheckSquare} from "lucide-react"
 import {createSupabaseClientForServer} from "@/lib/utils/supabase/server"
 import {fetchProfileServerAction} from "@/app/actions/profile.actions"
+import { getTranslation } from '@/lib/i18n/server'
 
 export async function ServerNavbar() {
     const supabase = await createSupabaseClientForServer()
     const {data: {user}} = await supabase.auth.getUser()
+    const { t } = getTranslation()
 
     if (user) {
         const profile = await fetchProfileServerAction(user.id)
@@ -28,7 +30,7 @@ export async function ServerNavbar() {
                                     href="/planning"
                                     className="px-4 py-2 text-sm font-medium transition-colors hover:text-primary"
                                 >
-                                    플래닝
+                                    {t('planning.title')}
                                 </Link>
                             </div>
 
