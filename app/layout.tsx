@@ -16,10 +16,24 @@ const geistMono = localFont({
     weight: "100 900",
 });
 
+// app/layout.tsx
 export const metadata: Metadata = {
-    title: "Block 6",
-    description: "Plan your day effectively",
-};
+    metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'),
+    title: {
+        default: 'Block 6 - 하루를 6개의 블록으로',
+        template: '%s | Block 6'
+    },
+    description: '하루를 6개의 시간 블록으로 나누어 효율적으로 관리할 수 있게 도와주는 도구입니다.',
+    keywords: ['시간관리', '생산성', '플래닝', '일정관리', '블록식스'],
+    authors: [{name: 'Block 6'}],
+    openGraph: {
+        type: 'website',
+        locale: 'ko_KR',
+        title: 'Block 6 - 하루를 6개의 블록으로',
+        description: '하루를 6개의 시간 블록으로 나누어 효율적으로 관리할 수 있게 도와주는 도구입니다.',
+        siteName: 'Block 6'
+    }
+}
 
 export default function RootLayout({
                                        children,
